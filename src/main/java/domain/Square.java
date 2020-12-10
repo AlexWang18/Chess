@@ -1,5 +1,7 @@
 package domain;
 
+import java.util.Objects;
+
 import domain.Pieces.Piece;
 
 public class Square { // holds coordinates and current piece at that square if available, otherwise
@@ -29,15 +31,31 @@ public class Square { // holds coordinates and current piece at that square if a
     }
 
     public boolean hasPiece(){
-        return this.piece != null;
+        return piece != null;
     }
 
     @Override
     public String toString() {
-        if (piece == null) {
+        if(piece == null) {
             return "-";
         }
         return piece.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Square)) {
+            return false;
+        }
+        Square othersquare = (Square) o;
+        return this.getCoord() == othersquare.getCoord() && this.getPiece() == othersquare.getPiece();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(coord,piece); 
+    }
+    
 }

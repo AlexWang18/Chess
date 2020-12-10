@@ -41,14 +41,14 @@ public class Pair {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(Object o) { //will be true when variables point to same memory or have the same X and Y values
 		if (o == this)
 			return true;
 		if (!(o instanceof Pair)) {
 			return false;
 		}
-		Pair pair = (Pair) o;
-		return positionX == pair.getX() && positionY == pair.getY();
+		Pair otherpair = (Pair) o;
+		return positionX == otherpair.getX() && positionY == otherpair.getY();
 	}
 
 	@Override

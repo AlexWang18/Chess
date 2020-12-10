@@ -2,6 +2,7 @@ package domain.Pieces;
 
 import domain.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import domain.Color.ColorType;
@@ -20,14 +21,22 @@ public class Knight extends Piece {
 
     @Override
     public boolean validOrNah(Pair start, Pair end) {
-        // 3 y, 1 x
+        int startx = start.getX();
+        int starty = start.getY();
+        int endx = end.getX();
+        int endy = end.getY();
+        if(Math.abs(endy - starty) == 2 && Math.abs(endx - startx) ==1){
+            return true;
+        }
+        else if(Math.abs(endy - starty) == 1 && Math.abs(endx - startx) ==2){
+            return true;
+        }
         return false;
     }
 
     @Override
     public List<Pair> getPiecePath(Pair start, Pair end) {
-        // TODO Auto-generated method stub
-        return null;
+        return new ArrayList<>();
     }
     
 }

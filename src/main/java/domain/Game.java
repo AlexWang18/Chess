@@ -8,25 +8,28 @@ implement path finding for rest of pieces
 
 import domain.Color.ColorType;
 import domain.Pieces.*;
+/*
 
-public class Game { // manages the game and its state can be active, stalemeate, ended, or
-                    // currentplayers victory
+*/
+
+public class Game {
     public boolean over = false;
     private Board board;
     private ColorType currentplayer;
-    private List<Move> moves;
+    private List<Move> previousMoves;
     private Map<ColorType, List<Piece>> pieceskilled;
-    private List<Piece> whitepieces;
-    private List<Piece> blackpieces;
+    private List<Piece> whiteCapturedBlack;
+    private List<Piece> blackCapturedWhite;
 
-    public Game() { // each game creates a new board, set of moves taken, and sets the player to //
-                    // move as white
+    public Game() { // each game creates a new board, set of moves taken, and sets the player to
+                    // white
+
         board = new Board();
-        moves = new ArrayList<>();
+        previousMoves = new ArrayList<>();
         currentplayer = ColorType.White;
         pieceskilled = new EnumMap<>(ColorType.class);
-        whitepieces = new ArrayList<>();
-        blackpieces = new ArrayList<>();
+        whiteCapturedBlack = new ArrayList<>();
+        blackCapturedWhite = new ArrayList<>();
     }
 
     public void startGame() {
@@ -37,77 +40,116 @@ public class Game { // manages the game and its state can be active, stalemeate,
         return !over;
     }
 
-    public void executeMove(int startx, int starty, int endx, int endy) { // need checkmate detection, refactor ifs
+    public void executeMove(int startx, int starty, int endx, int endy) { // need checkmate detection, refactor ifs into
+                                                                          // smaller functions, allowing friendlyfire
 
         Square[][] temp = board.getBoard();
         Square start = temp[starty][startx];
         Square end = temp[endy][endx];
+        if (start == end) {
+            System.out.println("You should move at least 1 square");
+            return;
+        }
         Pair startXY = start.getCoord();
         Pair endXY = end.getCoord();
         Piece startPiece = start.getPiece(); // get the pieces at those squares, throw error if not existing, NEED TO
-                                             // ADD NULL PROTECTION
+        Piece killedPiece = end.getPiece();
+
         if (startPiece == null) {
-            System.out.println("No piece at " + start.getCoord());
+            System.out.println("No piece exists at " + start.getCoord());
             return;
         }
-        Piece killedPiece = end.getPiece();
-        if (startPiece.getType() == PieceType.PAWN && startPiece.getColor() == currentplayer) { 
+        boolean check = isOwnedPiece(startPiece);
+        if (!check) {
+            System.out.println("You do not own" + startPiece + "at" + start.getCoord() + " silly");
+            return;
+        }
+        check = isFriendlyFire(startPiece, killedPiece);
+        if (check) {
+            System.out.println("Cannot take your own piece silly");
+            return;
+        }
+        check = isPawn(startPiece);
+        // special case for pawns
+        if (check) {
             Pawn pawn = (Pawn) startPiece;
-            if (pawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece) 
-                    && checkPath(startPiece.getPiecePath(startXY, endXY),endXY)) {
-                        addMove(start, end, pawn, killedPiece);
-            }
-            else{
+            // first check if the Piece can make the move, than look for barriers, and then
+            // go to add move which checks its further validity
+            check = pawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece)
+                    && checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
+
+            if (check) {
+                addMove(start, end, pawn, killedPiece);
+            } else {
                 System.out.println("Illegal pawn manuever at " + start.getCoord().getReadablePair());
                 return;
             }
         }
-
-        else if (startPiece.validOrNah(start.getCoord(), end.getCoord()) 
-                && startPiece.getColor() == currentplayer 
-                    && checkPath(startPiece.getPiecePath(startXY, endXY), endXY))
-                        addMove(start, end, startPiece, killedPiece);
+        boolean check2 = startPiece.validOrNah(start.getCoord(), end.getCoord())
+                && startPiece.getColor() == currentplayer
+                && checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
+        if (check2) {
+            addMove(start, end, startPiece, killedPiece);
+        }
 
         else {
-            System.out.println("Illegal move at " + start.getCoord().getReadablePair()); // could specify the error here wrong piece or cant move that way                               
+            System.out.println("Illegal move at " + start.getCoord().getReadablePair()); //need 2 specify
             return;
         }
+
         switchCurrentPlayer();
         printBoard();
         showScore();
     }
 
-    private boolean checkPath(List<Pair> path,Pair endXY){ //makes sure their isnt pieces in the way, BUGGING with bishops allowing for skips still...
-        Square[][] bd = board.getBoard();
-          
-        for (Pair pair : path) { //had to swap y and x and put failsafe 
-            if ((bd[pair.getY()][pair.getX()].hasPiece()
-                    && !pair.equals(endXY))) { 
-				        return false;
-			}
-		}
-		return true;
-    }
-    private void addMove(Square start, Square end, Piece startPiece, Piece killedPiece) { //not moving pawns and displaying it
-        // if the move is possible and if is their turn
-
-        if (killedPiece != null && startPiece.getColor() != killedPiece.getColor()) {
+    private void addMove(Square start, Square end, Piece startPiece, Piece killedPiece) {
+        if (killedPiece != null) { // if the subsequent move has captured a piece
             checkIfKing(killedPiece);
-            moves.add(new Move(start, end, startPiece, killedPiece));
+            previousMoves.add(new Move(start, end, startPiece, killedPiece));
             addKilledPiece(killedPiece);
         } else {
-            moves.add(new Move(start, end, startPiece, killedPiece)); // no capture performed
+            previousMoves.add(new Move(start, end, startPiece)); // no capture was performed
         }
     }
 
-    private void addKilledPiece(Piece killedpiece) {
-        if (killedpiece.getColor() == ColorType.White) {
-            pieceskilled.putIfAbsent(ColorType.White, whitepieces);
-            whitepieces.add(killedpiece);
+    private boolean isPawn(Piece startPiece) {
+        return startPiece.getType() == PieceType.PAWN;
+    }
+
+    private boolean isOwnedPiece(Piece startPiece) {
+        return startPiece.getColor() == this.currentplayer;
+    }
+
+    private boolean isFriendlyFire(Piece startPiece, Piece killedPiece) {
+        if (killedPiece == null)
+            return false;
+        return startPiece.getColor() == killedPiece.getColor();
+    }
+
+    private boolean checkPiecesPath(List<Pair> path, Pair startXY, Pair endXY) { // recieves list of coordinates for a
+                                                                                 // moved piece and its ending position.
+        // Returns false if there are pieces blocking it from moving
+
+        Square[][] bd = board.getBoard();
+
+        for (Pair pair : path) {
+
+            if ((bd[pair.getY()][pair.getX()].hasPiece() && (!pair.equals(startXY)) && (!pair.equals(endXY)))) {
+                System.out.println("Cannot hop over piece at " + pair);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void addKilledPiece(Piece killedPiece) { // helper function to
+        if (killedPiece.getColor() == ColorType.White) {
+            blackCapturedWhite.add(killedPiece);
+            pieceskilled.putIfAbsent(ColorType.White, blackCapturedWhite);
             return;
         }
-        blackpieces.add(killedpiece);
-        pieceskilled.putIfAbsent(ColorType.Black, blackpieces);
+        whiteCapturedBlack.add(killedPiece);
+        pieceskilled.putIfAbsent(ColorType.Black, whiteCapturedBlack);
     }
 
     private void checkIfKing(Piece killed) {
@@ -117,8 +159,8 @@ public class Game { // manages the game and its state can be active, stalemeate,
 
     private void showScore() { // not printing
         for (List<Piece> p : pieceskilled.values()) {
-            int score = 39 - p.stream().mapToInt(i -> i.getValue()).sum();
-            System.out.println(p.get(0).getColor() + "'s score: " + score); 
+            int score = 39 - p.stream().mapToInt(Piece::getValue).sum();
+            System.out.println("'s score: " + score);
         }
     }
 
