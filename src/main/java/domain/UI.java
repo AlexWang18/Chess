@@ -1,6 +1,6 @@
 package domain;
 
-//single responsibility principle 
+
 import java.util.Scanner;
 
 public class UI {
@@ -28,6 +28,7 @@ public class UI {
             System.out.print(game.getTurn()+"'s turn, ");
             System.out.println("enter the square you wish to move from.");
             String input1 = sc.nextLine();
+            if(input1.isBlank()) continue;
             Pair startingPair = getPair(input1.toLowerCase());
             if(checkIfNull(startingPair)){
                 System.out.println("Invalid square to move! Retry!");
@@ -37,6 +38,7 @@ public class UI {
             int startrank = startingPair.getY(); //6
             System.out.println("Enter the square you wish to move to.");
             String input2 = sc.nextLine();
+            if(input2.isBlank()) continue;
             Pair endingPair = getPair(input2.toLowerCase());
             if(checkIfNull(endingPair)){
                 System.out.println("Invalid square to move! Retry!");
@@ -52,7 +54,8 @@ public class UI {
     private boolean checkIfNull(Pair obj){
         return (obj == null);
     }
-    //method returns the pair for those cord from string
+
+    //method returns the pair for those cordinates from user inputted string
     private Pair getPair(String input){ 
         Pair p = new Pair(input);
         if(p.isPairValid()) return p;

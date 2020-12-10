@@ -1,5 +1,7 @@
 package domain.Pieces;
 
+import java.util.List;
+
 import domain.Pair;
 
 import domain.Color.ColorType;
@@ -14,9 +16,11 @@ public abstract class Piece { // better abstract than interface less overrlap
     }
 
     public abstract String toString();
+    
+    public abstract List<Pair> getPiecePath(Pair start, Pair end);
 
     public abstract boolean validOrNah(Pair start, Pair end); // checks if the movement coordinates are feasbile for that piece                                                     
-    //public abstract boolean validOrNah(Pair start, Pair end, Piece killed); //pawns
+
     public ColorType getColor() {
         return this.color;
     }

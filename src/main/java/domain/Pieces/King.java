@@ -1,6 +1,9 @@
 package domain.Pieces;
 
 import domain.Pair;
+
+import java.util.List;
+
 import domain.Color.ColorType;
 
 public class King extends Piece {
@@ -18,6 +21,12 @@ public class King extends Piece {
     @Override
     public boolean validOrNah(Pair start, Pair end) {
         return true;
+    }
+
+    @Override
+    public List<Pair> getPiecePath(Pair start, Pair end) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

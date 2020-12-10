@@ -1,8 +1,9 @@
 package domain;
 
-import java.util.*; //ui to pass inputs ? 
+import java.util.*; //Gui to display game todo
 /*
-issues with pawns, switching turns after not choosing a held squaer
+Need to check for piecs ahead of starting piece, only knights can hop
+implement path finding for rest of pieces
 */
 
 import domain.Color.ColorType;
@@ -41,25 +42,32 @@ public class Game { // manages the game and its state can be active, stalemeate,
         Square[][] temp = board.getBoard();
         Square start = temp[starty][startx];
         Square end = temp[endy][endx];
+        Pair startXY = start.getCoord();
+        Pair endXY = end.getCoord();
         Piece startPiece = start.getPiece(); // get the pieces at those squares, throw error if not existing, NEED TO
                                              // ADD NULL PROTECTION
         if (startPiece == null) {
-            System.out.println("No piece at " + start.getCoord()); // call toString of class
+            System.out.println("No piece at " + start.getCoord());
             return;
         }
         Piece killedPiece = end.getPiece();
-        if (startPiece.getType() == PieceType.PAWN) { // frickin pawns
+        if (startPiece.getType() == PieceType.PAWN && startPiece.getColor() == currentplayer) { 
             Pawn pawn = (Pawn) startPiece;
-            if (pawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece)) {
-                System.out.println("here");
-                addMove(start, end, pawn, killedPiece);
+            if (pawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece) 
+                    && checkPath(startPiece.getPiecePath(startXY, endXY),endXY)) {
+                        addMove(start, end, pawn, killedPiece);
             }
             else{
                 System.out.println("Illegal pawn manuever at " + start.getCoord().getReadablePair());
                 return;
             }
-        } else if (startPiece.validOrNah(start.getCoord(), end.getCoord()) && startPiece.getColor() == currentplayer)
-            addMove(start, end, startPiece, killedPiece);
+        }
+
+        else if (startPiece.validOrNah(start.getCoord(), end.getCoord()) 
+                && startPiece.getColor() == currentplayer 
+                    && checkPath(startPiece.getPiecePath(startXY, endXY), endXY))
+                        addMove(start, end, startPiece, killedPiece);
+
         else {
             System.out.println("Illegal move at " + start.getCoord().getReadablePair()); // could specify the error here wrong piece or cant move that way                               
             return;
@@ -69,6 +77,17 @@ public class Game { // manages the game and its state can be active, stalemeate,
         showScore();
     }
 
+    private boolean checkPath(List<Pair> path,Pair endXY){ //makes sure their isnt pieces in the way, BUGGING with bishops allowing for skips still...
+        Square[][] bd = board.getBoard();
+          
+        for (Pair pair : path) { //had to swap y and x and put failsafe 
+            if ((bd[pair.getY()][pair.getX()].hasPiece()
+                    && !pair.equals(endXY))) { 
+				        return false;
+			}
+		}
+		return true;
+    }
     private void addMove(Square start, Square end, Piece startPiece, Piece killedPiece) { //not moving pawns and displaying it
         // if the move is possible and if is their turn
 
@@ -99,9 +118,7 @@ public class Game { // manages the game and its state can be active, stalemeate,
     private void showScore() { // not printing
         for (List<Piece> p : pieceskilled.values()) {
             int score = 39 - p.stream().mapToInt(i -> i.getValue()).sum();
-            System.out.println(p.get(0).getColor() + "'s score: " + score); // should be of total pieces tho not just
-                                                                            // moved, could put this in Board class but
-                                                                            // ehh
+            System.out.println(p.get(0).getColor() + "'s score: " + score); 
         }
     }
 

@@ -1,5 +1,6 @@
 package domain;
 
+
 import domain.Pieces.Piece;
 import domain.Pieces.PieceType;
 
@@ -32,7 +33,7 @@ public class Move { // sets target square to the moving piece and sets the piece
                 start.setPiece(null); 
                 System.out.println(piecekilled.getColor()+"'s " + piecekilled.getType().name() + " has been captured by "+piecemoved.getColor()+"'s " + piecemoved.getType().name());
                 if(piecekilled.getType() != PieceType.KING)
-                    piecekilled.setDead(); //sets type to captured issues bc what if king
+                    piecekilled.setDead(); 
         }
         else{ //there was no captured piece
             end.setPiece(piecemoved);

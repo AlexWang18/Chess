@@ -28,7 +28,10 @@ public class Square { // holds coordinates and current piece at that square if a
         return this.coord;
     }
 
-    // get coord
+    public boolean hasPiece(){
+        return this.piece != null;
+    }
+
     @Override
     public String toString() {
         if (piece == null) {
