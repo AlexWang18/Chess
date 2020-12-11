@@ -2,6 +2,7 @@ package domain;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
@@ -20,7 +21,7 @@ public class AppTest
      */
     @BeforeClass
     public static void setUp(){
-        g = new Game();
+        g = Game.getGame();
         g.startGame();
     }
 
@@ -28,6 +29,12 @@ public class AppTest
     public void getTurn(){
         assertEquals(ColorType.White, g.getTurn());
     }
+    
+  /*  @Test
+    public void checkPieceList(){
+        assertThat(g.getMoves().isEmpty());
+    } */
+
     @Test
     public void testMoves(){
         assertFalse(g.executeMove(7, 7, 5, 7)); //jumping

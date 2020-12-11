@@ -28,6 +28,9 @@ public class Board { //handles displaying the board and subsequent changes
         }
     }
     public void setWhitePieces(){
+        for (int file = 0; file < bd.length; file++) {
+            bd[6][file].setPiece(new Pawn(ColorType.White));
+        } 
         bd[7][2].setPiece(new Bishop(ColorType.White));
 		bd[7][5].setPiece(new Bishop(ColorType.White));
 		bd[7][1].setPiece(new Knight(ColorType.White));
@@ -36,12 +39,11 @@ public class Board { //handles displaying the board and subsequent changes
 		bd[7][7].setPiece(new Rook(ColorType.White));
 		bd[7][3].setPiece(new Queen(ColorType.White));
 		bd[7][4].setPiece(new King(ColorType.White));
-        for (int file = 0; file < bd.length; file++) {
-            bd[6][file].setPiece(new Pawn(ColorType.White));
-        } 
-        
     }
     public void setBlackPieces(){
+        for (int file = 0; file < bd.length; file++) {
+            bd[1][file].setPiece(new Pawn(ColorType.Black));
+        }
         bd[0][2].setPiece(new Bishop(ColorType.Black)); 
         bd[0][5].setPiece(new Bishop(ColorType.Black));
         bd[0][1].setPiece(new Knight(ColorType.Black));
@@ -50,9 +52,6 @@ public class Board { //handles displaying the board and subsequent changes
         bd[0][7].setPiece(new Rook(ColorType.Black));
         bd[0][3].setPiece(new Queen(ColorType.Black));
         bd[0][4].setPiece(new King(ColorType.Black));
-        for (int file = 0; file < bd.length; file++) {
-            bd[1][file].setPiece(new Pawn(ColorType.Black));
-        }
     }
     public Square[][] getBoard(){
         return this.bd;

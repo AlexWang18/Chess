@@ -30,16 +30,20 @@ public class Bishop extends Piece {
 
     @Override
     public List<Pair> getPiecePath(Pair start, Pair end) {
-        int ylength = Math.abs(end.getY() - start.getY());
-    
-        Pair[] temparr = new Pair[ylength];
-        int signX=Integer.signum(end.getX()-start.getX()); //direction of the move, left or right
-        int signY=Integer.signum(end.getY()-start.getY());
-        
-        for (int i = 1; i <= ylength; i++) {
-            temparr[i-1] = new Pair(start.getX() + signX * i, start.getY()+ signY * i);
+        int starty = start.getY();
+        int startx = start.getX();
+        int endx = end.getX();
+        int endy = end.getY();
+        int length = Math.abs(endy - starty);
+
+        Pair[] temparr = new Pair[length];
+        int signX = Integer.signum(endx - startx); // direction of the move, left or right
+        int signY = Integer.signum(endy - starty);
+
+        for (int i = 1; i <= length; i++) {
+            temparr[i - 1] = new Pair(startx + signX * i, starty + signY * i); //signY * i is direction times growing length
         }
-        //System.out.println(Arrays.toString(temparr));
+        // System.out.println(Arrays.toString(temparr));
         return Arrays.asList(temparr);
     }
 
@@ -47,5 +51,5 @@ public class Bishop extends Piece {
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visitBishop(this);
     }
-    
+
 }

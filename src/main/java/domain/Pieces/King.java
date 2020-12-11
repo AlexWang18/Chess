@@ -31,9 +31,11 @@ public class King extends Piece {
 
         return overOne(startx, endx) && overOne(starty, endy);
     }
+
     private boolean overOne(int start, int end){
         return Math.abs((start-end)) == 1 || start - end == 0;
     }
+    
     @Override
     public List<Pair> getPiecePath(Pair start, Pair end) {
         int startx = start.getX();

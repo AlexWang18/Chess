@@ -4,7 +4,8 @@ package domain;
 import domain.Pieces.Piece;
 import domain.Pieces.PieceType;
 
-public class Move { // sets target square to the moving piece and sets the piece previously at that square dead.. need check for color if 
+public class Move { // sets target square to the moving piece and sets the piece previously at that square dead... does no error detection/ collision,
+    //assuming passed parameters are valid and sound.
                     
     private Square start;
     private Square end;

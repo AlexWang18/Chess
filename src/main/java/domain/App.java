@@ -8,10 +8,10 @@ import java.util.Scanner;
  */
 public class App 
 {
-    public static void main( String[] args )
+    public static void main(String...strings)
     {
-        Game game = new Game();
-
+        Game game = Game.getGame();
+        
         UI ui = new UI(game, new Scanner(System.in));
         ui.showGreeting();
         

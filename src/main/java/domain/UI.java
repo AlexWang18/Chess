@@ -1,11 +1,14 @@
 package domain;
 
-
 import java.util.Scanner;
+
+import domain.Pieces.Visitor;
 
 public class UI {
     private Game game;
     private Scanner sc;
+    //private Visitor<> visitor;
+    
     public UI(Game game, Scanner sc) {
         this.game = game;
         this.sc = sc;
@@ -14,15 +17,28 @@ public class UI {
     public void showGreeting() {
         System.out.println("Welcome to chess! Let's begin");
         game.startGame();
+
         getMoves();
-        gameOver();
+        gameIsOver();
     }
 
-    private void gameOver() {
+    private void gameIsOver() {
         System.out.println("GG!");
     }
+
+  /*  private void setMode(){
+        System.out.println("What style of rules do you want to play?");
+        System.out.println("Classic, Silly, or None");
+        String input = sc.nextLine();
+        if(input.equals("Classic")){
+            visitor = new ClassicRules();
+        }
+        else if(input.equals("Silly")){
+            visitor = new Object(); //would i encapsulate the pieces in Move, than accepting the created visitor
+        }
+    } */
+
     private void getMoves() {
-        
         while (game.notDone()) {
             System.out.print(game.getTurn()+"'s turn, ");
 
@@ -55,7 +71,10 @@ public class UI {
             int endfile = endingPair.getX();  
             int endrank = endingPair.getY();
 
-            if(!game.executeMove(startfile, startrank, endfile, endrank)) tellError();
+            if(!game.executeMove(startfile, startrank, endfile, endrank)) tellError(); 
+            /*
+            add method parameter to specify ruleset?
+            */
         }
     }
     private void tellError(){
