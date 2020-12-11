@@ -14,6 +14,7 @@ public abstract class Piece { // better abstract than interface less overrlap
         this.type = type; //never being initalized, type is staying at null
         this.color = color;
     }
+    public abstract <T> T accept(Visitor<T> visitor); //generic type
 
     public abstract String toString();
     
@@ -37,9 +38,6 @@ public abstract class Piece { // better abstract than interface less overrlap
         this.type = type;
     }
 
-    public void setDead() {
-        this.type = PieceType.CAPTURED; // refac
-    }
     public int getValue(){
         return this.type.getValue();
     }

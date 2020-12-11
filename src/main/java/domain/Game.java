@@ -14,15 +14,21 @@ import domain.Pieces.*;
 
 public class Game {
     public boolean over = false;
+
     private Board board;
+
     private ColorType currentplayer;
+
     private List<Move> previousMoves;
+
     private Map<ColorType, List<Piece>> pieceskilled;
+
     private List<Piece> whiteCapturedBlack;
+
     private List<Piece> blackCapturedWhite;
 
-    public Game() { // each game creates a new board, set of moves taken, and sets the player to
-                    // white
+
+    public Game() { // each game creates a new board, set of moves taken, and sets the player to white
 
         board = new Board();
         previousMoves = new ArrayList<>();
@@ -40,7 +46,7 @@ public class Game {
         return !over;
     }
 
-    public void executeMove(int startx, int starty, int endx, int endy) { // need checkmate detection, refactor ifs into
+    public boolean executeMove(int startx, int starty, int endx, int endy) { // need checkmate detection, refactor ifs into
                                                                           // smaller functions, allowing friendlyfire
 
         Square[][] temp = board.getBoard();
@@ -48,7 +54,7 @@ public class Game {
         Square end = temp[endy][endx];
         if (start == end) {
             System.out.println("You should move at least 1 square");
-            return;
+            return false;
         }
         Pair startXY = start.getCoord();
         Pair endXY = end.getCoord();
@@ -57,17 +63,17 @@ public class Game {
 
         if (startPiece == null) {
             System.out.println("No piece exists at " + start.getCoord());
-            return;
+            return false;
         }
         boolean check = isOwnedPiece(startPiece);
         if (!check) {
-            System.out.println("You do not own" + startPiece + "at" + start.getCoord() + " silly");
-            return;
+            System.out.println("You do not own " + startPiece + " at " + start.getCoord() + " silly");
+            return false;
         }
         check = isFriendlyFire(startPiece, killedPiece);
         if (check) {
             System.out.println("Cannot take your own piece silly");
-            return;
+            return false;
         }
         check = isPawn(startPiece);
         // special case for pawns
@@ -82,24 +88,26 @@ public class Game {
                 addMove(start, end, pawn, killedPiece);
             } else {
                 System.out.println("Illegal pawn manuever at " + start.getCoord().getReadablePair());
-                return;
+                return false;
             }
         }
-        boolean check2 = startPiece.validOrNah(start.getCoord(), end.getCoord())
-                && startPiece.getColor() == currentplayer
-                && checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
-        if (check2) {
+        boolean check2 = startPiece.validOrNah(start.getCoord(), end.getCoord());
+        boolean check3 = checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
+
+        if (check2 && check3) {
             addMove(start, end, startPiece, killedPiece);
         }
-
-        else {
-            System.out.println("Illegal move at " + start.getCoord().getReadablePair()); //need 2 specify
-            return;
+        else if(!check3){
+            return false;
         }
-
+        else {
+            System.out.println("Illegal move at " + start.getCoord().getReadablePair()+" "+startPiece.getType()+" cannot make those manuevers"); //need 2 specify
+            return false;
+        }
         switchCurrentPlayer();
         printBoard();
         showScore();
+        return true;
     }
 
     private void addMove(Square start, Square end, Piece startPiece, Piece killedPiece) {
@@ -152,6 +160,12 @@ public class Game {
         pieceskilled.putIfAbsent(ColorType.Black, whiteCapturedBlack);
     }
 
+    private List<Move> getMoves(){
+        previousMoves.stream().distinct().forEach(move->{
+            System.out.println(move.getPieceMoved() + ", " + move.getStartingSquare() + "to " + move.getEndingSquare());
+        });
+        return this.previousMoves;
+    }
     private void checkIfKing(Piece killed) {
         if (killed.getType() == PieceType.KING)
             over = true;

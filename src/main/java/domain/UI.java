@@ -21,36 +21,46 @@ public class UI {
     private void gameOver() {
         System.out.println("GG!");
     }
-
     private void getMoves() {
         
         while (game.notDone()) {
             System.out.print(game.getTurn()+"'s turn, ");
+
             System.out.println("enter the square you wish to move from.");
             String input1 = sc.nextLine();
+
             if(input1.isBlank()) continue;
+
             Pair startingPair = getPair(input1.toLowerCase());
             if(checkIfNull(startingPair)){
-                System.out.println("Invalid square to move! Retry!");
+                System.out.println("Invalid square to move to at " + startingPair.getReadablePair()+ " retry!");
                 continue;
             }
-            int startfile = startingPair.getX(); //2
-            int startrank = startingPair.getY(); //6
+
+            int startfile = startingPair.getX(); 
+            int startrank = startingPair.getY(); 
+
             System.out.println("Enter the square you wish to move to.");
             String input2 = sc.nextLine();
+
             if(input2.isBlank()) continue;
+
             Pair endingPair = getPair(input2.toLowerCase());
+
             if(checkIfNull(endingPair)){
-                System.out.println("Invalid square to move! Retry!");
+                System.out.println("Invalid square to move to at " + endingPair.getReadablePair()+ " retry!");
                 continue;
             }
+
             int endfile = endingPair.getX();  
             int endrank = endingPair.getY();
 
-            game.executeMove(startfile, startrank, endfile, endrank); //x,y x,y
+            if(!game.executeMove(startfile, startrank, endfile, endrank)) tellError();
         }
     }
-
+    private void tellError(){
+        System.out.println("Move did not follow through, try again..");
+    }
     private boolean checkIfNull(Pair obj){
         return (obj == null);
     }

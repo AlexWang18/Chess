@@ -10,12 +10,10 @@ public class App
 {
     public static void main( String[] args )
     {
-        Scanner sc = new Scanner(System.in);
         Game game = new Game();
-        UI ui = new UI(game, sc);
+
+        UI ui = new UI(game, new Scanner(System.in));
         ui.showGreeting();
-
-
-        sc.close();
+        
     }
 }

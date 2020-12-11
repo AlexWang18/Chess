@@ -81,11 +81,14 @@ public class Pawn extends Piece {
             int y = Math.min(starty, endy) + i; //not behaving properly c         
             temparr[i-1] = new Pair(startx, y);
         }
-        System.out.println(Arrays.asList(temparr));
         /*
         add support for capturing 1 up 1 side
         */
         return Arrays.asList(temparr);
     }
 
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+        return visitor.visitPawn(this);
+    }
 }

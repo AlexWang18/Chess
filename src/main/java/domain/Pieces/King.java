@@ -2,7 +2,9 @@ package domain.Pieces;
 
 import domain.Pair;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import domain.Color.ColorType;
 
@@ -20,13 +22,33 @@ public class King extends Piece {
 
     @Override
     public boolean validOrNah(Pair start, Pair end) {
-        return true;
+        if(start == end) return false;
+
+        int startx = start.getX();
+        int starty = start.getY();
+        int endx =  end.getX();
+        int endy = end.getY();
+
+        return overOne(startx, endx) && overOne(starty, endy);
+    }
+    private boolean overOne(int start, int end){
+        return Math.abs((start-end)) == 1 || start - end == 0;
+    }
+    @Override
+    public List<Pair> getPiecePath(Pair start, Pair end) {
+        int startx = start.getX();
+        int starty = start.getY();
+        int endx =  end.getX();
+        int endy = end.getY();
+        
+        Pair[] temp = {new Pair(Math.max(startx, endx), Math.max(starty, endy))};
+        
+        return Arrays.stream(temp).collect(Collectors.toList());
     }
 
     @Override
-    public List<Pair> getPiecePath(Pair start, Pair end) {
-        // TODO Auto-generated method stub
-        return null;
+    public <T> T accept(Visitor<T> visitor) {
+        return visitor.visitKing(this);
     }
-
+    
 }

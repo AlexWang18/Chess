@@ -16,7 +16,6 @@ public class Bishop extends Piece {
 
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
         return "B";
     }
 
@@ -42,6 +41,11 @@ public class Bishop extends Piece {
         }
         //System.out.println(Arrays.toString(temparr));
         return Arrays.asList(temparr);
+    }
+
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+        return visitor.visitBishop(this);
     }
     
 }

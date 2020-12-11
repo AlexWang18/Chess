@@ -26,6 +26,14 @@ public class Move { // sets target square to the moving piece and sets the piece
         return this.piecemoved;
     }   
 
+    public Square getStartingSquare(){
+        return this.start;
+    }
+
+    public Square getEndingSquare(){
+        return this.end;
+    }
+
     public void move() {
 
         if (piecekilled != null) {
@@ -33,7 +41,7 @@ public class Move { // sets target square to the moving piece and sets the piece
                 start.setPiece(null); 
                 System.out.println(piecekilled.getColor()+"'s " + piecekilled.getType().name() + " has been captured by "+piecemoved.getColor()+"'s " + piecemoved.getType().name());
                 if(piecekilled.getType() != PieceType.KING)
-                    piecekilled.setDead(); 
+                    piecekilled.setType(PieceType.CAPTURED); //changing this memory boxes type effectively should i do this could have repruccssions l8r
         }
         else{ //there was no captured piece
             end.setPiece(piecemoved);

@@ -36,7 +36,13 @@ public class Knight extends Piece {
 
     @Override
     public List<Pair> getPiecePath(Pair start, Pair end) {
+        //need to implement
         return new ArrayList<>();
+    }
+
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+        return visitor.visitKnight(this);
     }
     
 }
