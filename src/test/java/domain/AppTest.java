@@ -5,26 +5,47 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Scanner;
+
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.TextFromStandardInputStream;
 
 import domain.Color.ColorType;
 
 /**
- * Unit test for simple App.
+ * Uses System Rules dependency
  */
 public class AppTest
 {
     private static Game g;
+    private static UI input;
+    
     /**
      * Rigorous Test :-)
      */
+    @Rule
+    //public final TextFromStandardInputStream systemInMock = emptyStandardInputStream();
     @BeforeClass
     public static void setUp(){
         g = Game.getGame();
-        g.startGame();
+        
+    }
+    
+    private TextFromStandardInputStream emptyStandardInputStream() {
+        return null;
     }
 
+    @Test
+    public void shouldTakeUserInput(){
+        
+        InputStream in = new ByteArrayInputStream("h7, h5".getBytes());
+        input = new UI(g, new Scanner(in));
+        assertEquals("h7, h5", System.console() );
+    }
     @Test
     public void getTurn(){
         assertEquals(ColorType.White, g.getTurn());

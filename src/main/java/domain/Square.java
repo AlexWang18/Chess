@@ -4,8 +4,8 @@ import java.util.Objects;
 
 import domain.Pieces.Piece;
 
-public class Square { // holds coordinates and current piece at that square if available, otherwise
-                      // null
+public class Square { // holds coordinates and current piece at that square if available, otherwise Piece will be null
+               
     private Pair coord;
     private Piece piece;
 

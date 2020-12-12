@@ -186,18 +186,7 @@ public class Game {
         return loopThruPieces(board.getBoard(), kingXY);
     }
 
-    private boolean loopThruPieces(List<Piece> pieces, Pair kingXY) { // might have to loop through squares cuz Pieces
-                                                                      // do not know about their coordinates :(
-        for (Piece piece : pieces) {
-            // if(piece.validOrNah(piece, kingXY))
-            // return true;
-
-        }
-        return false;
-    }
-
     private boolean loopThruPieces(Square[][] bd, Pair kingXY) { // might have to loop through squares cuz Pieces
-        boolean check = false;
         for (int i = 0; i < bd.length; i++) {
             for (int j = 0; j < bd.length; j++) {
                 Square sq = bd[i][j];
@@ -217,7 +206,7 @@ public class Game {
 
         Piece temp = bd[rank][file].getPiece();
         if (temp != null && temp.getColor() == currentplayer && temp.getType() == PieceType.KING) {
-            System.out.println("found it"+ bd[rank][file].getCoord());
+            System.out.println("found it "+ bd[rank][file].getCoord());
             return bd[rank][file].getCoord();
         } else {
             if (file < bd[rank].length - 1) { // still has some bugs stackoverflowing in some instances
