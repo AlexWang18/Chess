@@ -21,7 +21,7 @@
             "type": "java",
             "name": "Debug (Launch)-App<chess>",
             "request": "launch",
-            "mainClass": "domain.App",
+            "mainClass": "domain.UserInterface.App",
             "projectName": "chess"
         }
     ]

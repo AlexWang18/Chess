@@ -27,10 +27,18 @@ public class Move { // sets target square to the moving piece and sets the piece
         return this.piecemoved;
     }   
 
+    public Pair getStartingPair(){
+        return getStartingSquare().getCoord();
+    }
+
+    public Pair getEndingPair(){
+        return getEndingSquare().getCoord();
+    }
+    
     public Square getStartingSquare(){
         return this.start;
     }
-
+    
     public Square getEndingSquare(){
         return this.end;
     }
@@ -48,5 +56,9 @@ public class Move { // sets target square to the moving piece and sets the piece
             end.setPiece(piecemoved);
             start.setPiece(null);
         }
+    }
+    @Override 
+    public String toString(){
+        return this.getPieceMoved().getColor()+" "+this.getPieceMoved() + ", " + this.getStartingPair() + " -> " + this.getEndingPair();
     }
 }

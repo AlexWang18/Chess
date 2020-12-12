@@ -81,12 +81,16 @@ public class UI {
                 int endfile = endingPair.getX();
                 int endrank = endingPair.getY();
 
-                if (!game.executeMove(startfile, startrank, endfile, endrank))
+                if (!game.validMove(startfile, startrank, endfile, endrank))
                     tellError();
+                else{
+                    assert true; //move went thru
+                }
 
             } catch (InputMismatchException exception) {
                 System.out.println("Error occured in scanning users input   ");
             }
+            game.getMoves();
         }
     }
 

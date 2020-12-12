@@ -60,11 +60,11 @@ public class AppTest
 
     @Test
     public void testMoves(){
-        assertFalse(g.executeMove(7, 7, 5, 7)); //jumping
+        assertFalse(g.validMove(7, 7, 5, 7)); //jumping
 
-        assertFalse(g.executeMove(1, 1, 3, 1)); //wrong turn
+        assertFalse(g.validMove(1, 1, 3, 1)); //wrong turn
 
-        assertTrue(g.executeMove(6,6, 4,6));
+        assertTrue(g.validMove(6,6, 4,6));
     }
     public void testGameOver(){
         assertTrue(g.notDone());
