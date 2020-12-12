@@ -1,4 +1,4 @@
-package domain;
+package domain.Logic;
 
 import java.util.Objects;
 
@@ -55,7 +55,7 @@ public class Square { // holds coordinates and current piece at that square if a
 
     @Override
     public int hashCode() {
-        return Objects.hash(coord,piece); 
+        return Objects.hash(coord,piece); //utility method creates hash from fields
     }
     
 }

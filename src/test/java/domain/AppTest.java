@@ -14,7 +14,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.TextFromStandardInputStream;
 
-import domain.Color.ColorType;
+import domain.Logic.Game;
+import domain.Logic.Color.ColorType;
+import domain.UserInterface.*;
 
 /**
  * Uses System Rules dependency
@@ -44,7 +46,7 @@ public class AppTest
         
         InputStream in = new ByteArrayInputStream("h7, h5".getBytes());
         input = new UI(g, new Scanner(in));
-        assertEquals("h7, h5", System.console() );
+        assertEquals("h7, h5", in);
     }
     @Test
     public void getTurn(){

@@ -1,16 +1,22 @@
-package domain;
+package domain.Logic;
 
-import java.util.*; //Gui to display game todo
+//Gui to display game todo
 /*
 Need to check for piecs ahead of starting piece, only knights can hop
 implement path finding for rest of pieces
 */
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
-import domain.Color.ColorType;
-import domain.Pieces.*;
+import domain.Logic.Color.ColorType;
 /*
 
 */
+import domain.Pieces.Pawn;
+import domain.Pieces.Piece;
+import domain.Pieces.PieceType;
 
 public class Game {
     public boolean over = false;
@@ -191,14 +197,31 @@ public class Game {
             for (int j = 0; j < bd.length; j++) {
                 Square sq = bd[i][j];
                 if (sq.hasPiece()) {
-                    Piece here = sq.getPiece();
-                    if (!isOwnedPiece(here) && here.validOrNah(sq.getCoord(), kingXY)) { // attackers
+                    Piece pieceHere = sq.getPiece();
+                    if (!isOwnedPiece(pieceHere) && pieceHere.validOrNah(sq.getCoord(), kingXY)) { // attackers
                         return true;
                     }
                 }
             }
         }
         return false;
+    }
+
+    private boolean loopThruPieces(Square[][] bd, Pair kingXY, int i, int j) { // might have to loop through squares cuz Pieces
+        if(bd[i][j].hasPiece() && !isOwnedPiece(bd[i][j].getPiece()) 
+                && bd[i][j].getPiece().validOrNah(bd[i][j].getCoord(), kingXY)) 
+                    return true;
+        
+        if(j < bd[i].length -1){
+            return loopThruPieces(bd, kingXY, i, j+1);
+        }
+        else if(i < bd.length - 1){
+            return loopThruPieces(bd, kingXY, i+1, 0);
+        }
+        else{
+            return loopThruPieces(bd, kingXY, i-2, j-2);
+        }
+        
     }
 
     private Pair getKingPos(Square[][] bd, int rank, int file) { // recursive function to find where king is, better

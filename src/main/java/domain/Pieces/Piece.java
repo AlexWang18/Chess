@@ -2,9 +2,8 @@ package domain.Pieces;
 
 import java.util.List;
 
-import domain.Pair;
-
-import domain.Color.ColorType;
+import domain.Logic.Pair;
+import domain.Logic.Color.*;
 
 public abstract class Piece { // better abstract than interface less overrlap
     private ColorType color;

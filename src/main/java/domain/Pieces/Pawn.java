@@ -3,8 +3,8 @@ package domain.Pieces;
 import java.util.Arrays;
 import java.util.List;
 
-import domain.Color.ColorType;
-import domain.Pair;
+import domain.Logic.Color.*;
+import domain.Logic.Pair;
 
 public class Pawn extends Piece {
     public static final PieceType TYPE = PieceType.PAWN; // final for each instance

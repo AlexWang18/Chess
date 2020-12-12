@@ -1,4 +1,4 @@
-package domain;
+package domain.Logic;
 
 public class Color {
     public enum ColorType{ 

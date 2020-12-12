@@ -1,6 +1,8 @@
-package domain;
+package domain.UserInterface;
 
 import java.util.Scanner;
+
+import domain.Logic.Game;
 
 /**
  * Hello world!

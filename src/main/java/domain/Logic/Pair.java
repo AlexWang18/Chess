@@ -1,4 +1,4 @@
-package domain;
+package domain.Logic;
 
 public class Pair {
 	private int positionX;

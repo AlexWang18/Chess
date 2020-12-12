@@ -1,4 +1,4 @@
-package domain;
+package domain.Logic;
 
 
 import domain.Pieces.Piece;

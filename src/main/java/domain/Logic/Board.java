@@ -1,13 +1,13 @@
-package domain;
+package domain.Logic;
 
 import java.util.Arrays;
 
-import domain.Color.ColorType;
+
+import domain.Logic.Color.ColorType;
 import domain.Pieces.Bishop;
 import domain.Pieces.King;
 import domain.Pieces.Knight;
 import domain.Pieces.Pawn;
-import domain.Pieces.Piece;
 import domain.Pieces.Queen;
 import domain.Pieces.Rook;
 

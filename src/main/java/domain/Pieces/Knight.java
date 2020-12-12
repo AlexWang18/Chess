@@ -1,11 +1,10 @@
 package domain.Pieces;
 
-import domain.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import domain.Color.ColorType;
+import domain.Logic.Pair;
+import domain.Logic.Color.ColorType;
 
 public class Knight extends Piece {
     public static final PieceType TYPE = PieceType.KNIGHT;

@@ -1,8 +1,10 @@
-package domain;
+package domain.UserInterface;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import domain.Logic.Game;
+import domain.Logic.Pair;
 import domain.Pieces.Visitor;
 
 public class UI {
@@ -35,21 +37,27 @@ public class UI {
      * if(input.equals("Silly")){ visitor = new Object(); //would i encapsulate the
      * pieces in Move, than accepting the created visitor } }
      */
+         /*
+        * add method parameter to specify ruleset?
+         */
+    private boolean isInputValid(String input){
+        return !(input.isBlank() || input.length() > 2);
+    }
 
     private void getMoves() {
         while (game.notDone()) {
             try {
-
                 System.out.print(game.getTurn() + "'s turn, ");
 
                 System.out.println("enter the square you wish to move from.");
                 String input1 = sc.nextLine();
 
-                if (input1.isBlank())
+                if(!isInputValid(input1))
                     continue;
 
                 Pair startingPair = getPair(input1.toLowerCase());
-                if (checkIfNull(startingPair)) {
+
+                if(!checkPair(startingPair)){
                     System.out.println("Invalid square to move to at " + startingPair.getReadablePair() + " retry!");
                     continue;
                 }
@@ -60,12 +68,12 @@ public class UI {
                 System.out.println("Enter the square you wish to move to.");
                 String input2 = sc.nextLine();
 
-                if (input2.isBlank())
+                if (!isInputValid(input2))
                     continue;
 
                 Pair endingPair = getPair(input2.toLowerCase());
 
-                if (checkIfNull(endingPair)) {
+                if (!checkPair(endingPair)) {
                     System.out.println("Invalid square to move to at " + endingPair.getReadablePair() + " retry!");
                     continue;
                 }
@@ -75,9 +83,7 @@ public class UI {
 
                 if (!game.executeMove(startfile, startrank, endfile, endrank))
                     tellError();
-                /*
-                 * add method parameter to specify ruleset?
-                 */
+
             } catch (InputMismatchException exception) {
                 System.out.println("Error occured in scanning users input   ");
             }
@@ -88,15 +94,11 @@ public class UI {
         System.out.println("Move did not follow through, try again..");
     }
 
-    private boolean checkIfNull(Pair obj) {
-        return (obj == null);
+    private boolean checkPair(Pair p) {
+        return p.isPairValid();
     }
 
-    // method returns the pair for those cordinates from user inputted string
-    private Pair getPair(String input) {
-        Pair p = new Pair(input);
-        if (p.isPairValid())
-            return p;
-        return p; // refactor
+    private Pair getPair(String input){
+        return new Pair(input);
     }
 }

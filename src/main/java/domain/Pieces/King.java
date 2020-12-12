@@ -1,12 +1,11 @@
 package domain.Pieces;
 
-import domain.Pair;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import domain.Color.ColorType;
+import domain.Logic.Pair;
+import domain.Logic.Color.ColorType;
 
 public class King extends Piece {
     public static final PieceType TYPE = PieceType.KING;
