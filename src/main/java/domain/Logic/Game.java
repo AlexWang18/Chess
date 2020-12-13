@@ -34,8 +34,7 @@ public class Game {
 
     private static Game g = new Game();
 
-    private Game() { // each game creates a new board, set of moves taken, and sets the player to
-                     // white
+    private Game() { // each game creates a new board, set of moves taken, and sets the player to white   
 
         board = new Board();
         previousMoves = new ArrayList<>();
@@ -58,7 +57,7 @@ public class Game {
     }
 //control flow error with check adding move to list before returning false
     public boolean validMove(int startx, int starty, int endx, int endy) { // need checkmate detection, refactor ifs,
-                                                                             // main logic funct for moving
+                                                                             // main logic funct for moving,. split into if functions
         if (!inBounds(startx, starty) || !inBounds(endx, endy))
             return false;
 
@@ -79,13 +78,16 @@ public class Game {
             System.out.println("No piece exists at " + start.getCoord());
             return false;
         }
+
         boolean test = isOwnedPiece(startPiece);
+
         if (!test) {
             System.out.println("You do not own " + startPiece + " at " + start.getCoord() + " silly");
             return false;
         }
 
         test = isCheck() && startPiece.getType() != PieceType.KING;
+
         if(test){
             System.out.println("Cannot move another piece while in check!! Must move your king!");
             return false;
@@ -96,30 +98,30 @@ public class Game {
             System.out.println("Cannot take your own piece silly");
             return false;
         }
-        test = isPawn(startPiece);
-        boolean test2 = startPiece.validOrNah(start.getCoord(), end.getCoord());
-        boolean test3 = checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
+        boolean testPawn = isPawn(startPiece);
+        boolean testPiece = startPiece.validOrNah(start.getCoord(), end.getCoord());
+        boolean testPiece2 = checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
 
         // special case for pawns
-        if (test) {
+        if (testPawn) {
             Pawn pawn = (Pawn) startPiece;
             // first check if the Piece can make the move, than look for barriers, and then
             // go to add move which checks its further validity
 
-            test = pawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece)
+            testPawn = pawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece)
                     && checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
 
-            if (test) {
-                ;//pass
+            if (testPawn) {
+                wasValidMove(start, end, startPiece, killedPiece); //pass
             } else {
                 System.out.println("Illegal pawn manuever at " + start.getCoord().getReadablePair());
                 return false;
             }
         }
-        else if (test2 && test3) {
-            ;
-        } else if (!test3) {
-                System.out.println("Reg piece Cannot hop over pieces");
+        else if (testPiece && testPiece2) { //for pieces other than pawns
+            wasValidMove(start, end, startPiece, killedPiece);
+        } 
+        else if (!testPiece2) {
                 return false;
         } else {
                 System.out.println("Illegal move at " + start.getCoord().getReadablePair() + " " + startPiece.getType()
@@ -127,11 +129,14 @@ public class Game {
                 return false;
         }
 
+        return true;
+    }
+
+    private void wasValidMove(Square start, Square end, Piece startPiece, Piece killedPiece){
         addMove(start, end, startPiece, killedPiece);
         switchCurrentPlayer();
         printBoard();
         showScore();
-        return true;
     }
 
     private void addMove(Square start, Square end, Piece startPiece, Piece killedPiece) {
@@ -141,13 +146,31 @@ public class Game {
             addKilledPiece(killedPiece);
         }
         previousMoves.add(new Move(start, end, startPiece, killedPiece)); //killedPiece could be null, 
-        /*
-        adding two moves for some reason
-        */
     }
 
     private boolean isCheckMate(){
+        if(!isCheck()) return false;
+        Square[][] bd = board.getBoard();
+        List<Pair> possibleKingPos = new ArrayList<>(8);
+        Pair currentKingPos = getKingPos(board.getBoard(), 0, 0);
+        int x = currentKingPos.getX();
+        int y = currentKingPos.getY();
+        //if not at end or edge of the board 8 possible moves
+        for(int rank = 0; rank < 3; rank++){ //right
+            if(!bd[x+1][y+rank].hasPiece())
+                possibleKingPos.add(new Pair(x+1, y+rank));
+            
+        }
+        for(int rank = 0; rank < 3; rank++){ //left
+            if(!bd[x-1][y+rank].hasPiece())
+                possibleKingPos.add(new Pair(x-1, y+rank));
+        }
+        for(int rank = 0; rank < 2; rank++){ //left
+            if(!bd[x][y+rank].hasPiece())
+                possibleKingPos.add(new Pair(x-1, y+rank));
+        }
         return false;
+        //get current King moves, 
     }
 
     private boolean isPawn(Piece startPiece) {
@@ -172,11 +195,13 @@ public class Game {
                                                                                  // moved piece and its ending position.
 
         Square[][] bd = board.getBoard();
+        Piece startPiece = bd[startXY.getY()][startXY.getX()].getPiece();
 
         for (Pair pair : path) {
 
             if ((bd[pair.getY()][pair.getX()].hasPiece() && (!pair.equals(startXY)) && (!pair.equals(endXY)))) {
-                System.out.println("Cannot hop over piece at " + pair);
+                Piece pieceAtThisPos = bd[pair.getY()][pair.getX()].getPiece();
+                System.out.println(startPiece.getReadablePiece() + " cannot hop over the " + pieceAtThisPos.getReadablePiece()+" at " + pair);
                 return false;
             } // Returns false if there are pieces blocking it from moving
         }
@@ -232,7 +257,7 @@ public class Game {
 
         Piece temp = bd[rank][file].getPiece();
         if (temp != null && temp.getColor() == currentplayer && temp.getType() == PieceType.KING) {
-            System.out.println("found it "+ bd[rank][file].getCoord());
+            //System.out.println("found it "+ bd[rank][file].getCoord());
             return bd[rank][file].getCoord();
         } else {
             if (file < bd[rank].length - 1) { // still has some bugs stackoverflowing in some instances

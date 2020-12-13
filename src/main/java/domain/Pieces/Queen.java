@@ -68,4 +68,9 @@ public class Queen extends Piece {
         return visitor.visitQueen(this);
     }
 
+    @Override
+    public String getReadablePiece() {
+        return "Queen";
+    }
+
 }

@@ -43,5 +43,10 @@ public class Knight extends Piece {
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visitKnight(this);
     }
+
+    @Override
+    public String getReadablePiece() {
+        return "Knight";
+    }
     
 }

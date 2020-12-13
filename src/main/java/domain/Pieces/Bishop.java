@@ -51,4 +51,9 @@ public class Bishop extends Piece {
         return visitor.visitBishop(this);
     }
 
+    @Override
+    public String getReadablePiece() {
+        return "Bishop";
+    }
+
 }

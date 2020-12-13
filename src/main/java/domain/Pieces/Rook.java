@@ -61,4 +61,9 @@ public class Rook extends Piece {
         return visitor.visitRook(this);
     }
 
+    @Override
+    public String getReadablePiece() {
+        return "Rook";
+    }
+
 }

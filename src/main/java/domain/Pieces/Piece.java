@@ -17,7 +17,7 @@ public abstract class Piece { // better abstract than interface less overrlap
 
     public abstract String toString();
     
-    //public abstract String getReadablePiece();
+    public abstract String getReadablePiece();
 
     public abstract List<Pair> getPiecePath(Pair start, Pair end);
 

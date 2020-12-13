@@ -91,4 +91,9 @@ public class Pawn extends Piece {
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visitPawn(this);
     }
+
+    @Override
+    public String getReadablePiece() {
+        return "Pawn";
+    }
 }

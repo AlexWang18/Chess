@@ -59,6 +59,6 @@ public class Move { // sets target square to the moving piece and sets the piece
     }
     @Override 
     public String toString(){
-        return this.getPieceMoved().getColor()+" "+this.getPieceMoved() + ", " + this.getStartingPair() + " -> " + this.getEndingPair();
+        return this.piecemoved.getColor()+" "+this.piecemoved.getReadablePiece() + ", " + this.getStartingPair() + " -> " + this.getEndingPair();
     }
 }
