@@ -6,6 +6,7 @@ import domain.Pieces.PieceType;
 
 public class Move { // sets target square to the moving piece and sets the piece previously at that square dead... does no error detection/ collision,
     //assuming passed parameters are valid and sound.
+    //add undo move functionality
                     
     private Square start;
     private Square end;
@@ -27,6 +28,10 @@ public class Move { // sets target square to the moving piece and sets the piece
         return this.piecemoved;
     }   
 
+    public Piece getPieceKilled(){
+        return this.piecekilled;
+    }
+
     public Pair getStartingPair(){
         return getStartingSquare().getCoord();
     }
@@ -46,19 +51,30 @@ public class Move { // sets target square to the moving piece and sets the piece
     public void move() {
 
         if (piecekilled != null) {
-                end.setPiece(piecemoved);
-                start.setPiece(null); 
-                System.out.println(piecekilled.getColor()+"'s " + piecekilled.getType().name() + " has been captured by "+piecemoved.getColor()+"'s " + piecemoved.getType().name());
+                setPieces();
+                //System.out.println(piecekilled.getColor()+"'s " + piecekilled.getType().name() + " has been captured by "+piecemoved.getColor()+"'s " + piecemoved.getType().name());
                 if(piecekilled.getType() != PieceType.KING)
                     piecekilled.setType(PieceType.CAPTURED); //changing this memory boxes type effectively should i do this could have repruccssions l8r
         }
         else{ //there was no captured piece
-            end.setPiece(piecemoved);
-            start.setPiece(null);
+            setPieces();
         }
     }
+
+    public boolean isCapture(){
+        return piecekilled != null;
+    }
+    
+    private void setPieces(){
+        end.setPiece(piecemoved);
+        start.setPiece(null); 
+    }
+
     @Override 
     public String toString(){
-        return this.piecemoved.getColor()+" "+this.piecemoved.getReadablePiece() + ", " + this.getStartingPair() + " -> " + this.getEndingPair();
+        if(piecekilled == null)
+            return this.piecemoved.getColor()+" "+this.piecemoved.getReadablePiece() + ", " + this.getStartingPair() + " -> " + this.getEndingPair();
+
+        return this.piecemoved.getColor()+" "+this.piecemoved.getReadablePiece() + ", " + this.getStartingPair() + " -> " + this.getEndingPair() +", captures " +piecekilled.getColor() + " " + piecekilled.getReadablePiece();
     }
 }

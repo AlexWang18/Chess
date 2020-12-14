@@ -11,7 +11,8 @@ import java.util.Map;
 
 import domain.Logic.Color.ColorType;
 /*
-
+    need to add enpassant and castling
+    Check detection bug bc recycling piece path method and current players move has not fully rendered so it is still temp blocking even though it will not be and cause a check  
 */
 import domain.Pieces.Pawn;
 import domain.Pieces.Piece;
@@ -32,6 +33,8 @@ public class Game {
 
     private List<Piece> blackCapturedWhite;
 
+    private int current;
+
     private static Game g = new Game();
 
     private Game() { // each game creates a new board, set of moves taken, and sets the player to white   
@@ -42,6 +45,7 @@ public class Game {
         pieceskilled = new EnumMap<>(ColorType.class);
         whiteCapturedBlack = new ArrayList<>();
         blackCapturedWhite = new ArrayList<>();
+        current = 0;
     }
 
     public static Game getGame() { // Singleton, Only one game will occur at a time
@@ -55,7 +59,7 @@ public class Game {
     public boolean notDone() {
         return !over;
     }
-//control flow error with check adding move to list before returning false
+
     public boolean validMove(int startx, int starty, int endx, int endy) { // need checkmate detection, refactor ifs,
                                                                              // main logic funct for moving,. split into if functions
         if (!inBounds(startx, starty) || !inBounds(endx, endy))
@@ -64,8 +68,8 @@ public class Game {
         Square[][] temp = board.getBoard();
         Square start = temp[starty][startx];
         Square end = temp[endy][endx];
-        if (start == end) {
-            System.out.println("You should move at least 1 square");
+        if (start.equals(end)) {
+            Errors.displayNoMovement();
             return false;
         }
 
@@ -86,10 +90,10 @@ public class Game {
             return false;
         }
 
-        test = isCheck() && startPiece.getType() != PieceType.KING;
+        test = moveMakesCheck(start, end); //does the move cause the current player to get in check
 
         if(test){
-            System.out.println("Cannot move another piece while in check!! Must move your king!");
+            System.out.println("Cannot move " + startPiece.getReadablePiece() + "at" + startXY.getReadablePair() + " as you are in check");
             return false;
         }
 
@@ -98,13 +102,12 @@ public class Game {
             System.out.println("Cannot take your own piece silly");
             return false;
         }
-        boolean testPawn = isPawn(startPiece);
-        boolean testPiece = startPiece.validOrNah(start.getCoord(), end.getCoord());
-        boolean testPiece2 = checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
 
-        // special case for pawns
+        boolean testPawn = isPawn(startPiece);
+        // special case for pawns add enpassant in valid or nah implementation, not sure actually
         if (testPawn) {
             Pawn pawn = (Pawn) startPiece;
+
             // first check if the Piece can make the move, than look for barriers, and then
             // go to add move which checks its further validity
 
@@ -112,16 +115,21 @@ public class Game {
                     && checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
 
             if (testPawn) {
-                wasValidMove(start, end, startPiece, killedPiece); //pass
+                wasValidMove(start, end, startPiece, killedPiece); //passes
+                return true;
             } else {
                 System.out.println("Illegal pawn manuever at " + start.getCoord().getReadablePair());
                 return false;
             }
         }
-        else if (testPiece && testPiece2) { //for pieces other than pawns
+
+        boolean testPieceValidMove = !isPawn(startPiece) && startPiece.validOrNah(start.getCoord(), end.getCoord());
+        boolean testPiecePath = checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
+
+        if (testPieceValidMove && testPiecePath) { //for pieces other than pawns
             wasValidMove(start, end, startPiece, killedPiece);
         } 
-        else if (!testPiece2) {
+        else if (!testPiecePath) {
                 return false;
         } else {
                 System.out.println("Illegal move at " + start.getCoord().getReadablePair() + " " + startPiece.getType()
@@ -132,11 +140,27 @@ public class Game {
         return true;
     }
 
+    private boolean moveMakesCheck(Square start, Square end){ //not sure about logic here
+        Piece temp = end.getPiece();
+        end.setPiece(start.getPiece());
+        start.killPiece();
+
+        if(isCheck(end.getPiece().getColor())){
+            start.setPiece(end.getPiece()); //reset it 
+            end.setPiece(temp);
+            return true;
+        }else{
+            start.setPiece(end.getPiece()); //move is all gravy
+            end.setPiece(temp);
+        }
+        return false;
+    }
     private void wasValidMove(Square start, Square end, Piece startPiece, Piece killedPiece){
         addMove(start, end, startPiece, killedPiece);
         switchCurrentPlayer();
-        printBoard();
-        showScore();
+        current++; 
+        //printBoard();
+        //showScore();
     }
 
     private void addMove(Square start, Square end, Piece startPiece, Piece killedPiece) {
@@ -149,7 +173,7 @@ public class Game {
     }
 
     private boolean isCheckMate(){
-        if(!isCheck()) return false;
+        if(!isCheck(currentplayer)) return false;
         Square[][] bd = board.getBoard();
         List<Pair> possibleKingPos = new ArrayList<>(8);
         Pair currentKingPos = getKingPos(board.getBoard(), 0, 0);
@@ -199,76 +223,64 @@ public class Game {
 
         for (Pair pair : path) {
 
-            if ((bd[pair.getY()][pair.getX()].hasPiece() && (!pair.equals(startXY)) && (!pair.equals(endXY)))) {
+            if ((bd[pair.getY()][pair.getX()].hasPiece() && (!pair.equals(startXY)) && (!pair.equals(endXY)))) { //ignore the start and end squares, only care if obstructions in btw
                 Piece pieceAtThisPos = bd[pair.getY()][pair.getX()].getPiece();
-                System.out.println(startPiece.getReadablePiece() + " cannot hop over the " + pieceAtThisPos.getReadablePiece()+" at " + pair);
+                //System.out.println(startPiece.getReadablePiece() + " cannot hop over the " + pieceAtThisPos.getReadablePiece()+" at " + pair);
                 return false;
             } // Returns false if there are pieces blocking it from moving
         }
         return true;
     }
 
-    private boolean isCheck() { // iterate through pieces to find king and its location then iterate through 
+    private boolean isCheck(ColorType testColor) { // iterate through pieces to find king and its location then iterate through 
                                 // oppositite colors pieces to see if they have a valid path from present location to King,
 
         Pair kingXY = null;
-        if (currentplayer == ColorType.White) {
-            kingXY = getKingPos(board.getBoard(), 7, 0); // start from bottom row to find whites king, might just do 0,0
+        if (testColor == ColorType.White) { 
+            kingXY = getKingPos(board.getBoard(), 7, 0); // Find current players Kings position on the board
         } else {
             kingXY = getKingPos(board.getBoard(), 0, 0);
         }
-        // call loop depending on color and check if that piece has
+        // delegate looping to another func
         return loopThruPieces(board.getBoard(), kingXY);
     }
 
-    private boolean loopThruPieces(Square[][] bd, Pair kingXY) { // might have to loop through squares cuz Pieces
+    private boolean loopThruPieces(Square[][] bd, Pair kingXY) { //Will return true if the current iterated piece can attack the king without things in the way
         for (int i = 0; i < bd.length; i++) {
             for (int j = 0; j < bd.length; j++) {
+
                 Square sq = bd[i][j];
                 if (sq.hasPiece()) {
                     Piece pieceHere = sq.getPiece();
-                    if (!isOwnedPiece(pieceHere) && pieceHere.validOrNah(sq.getCoord(), kingXY)) { // attackers
-                        return true;
-                    }
+                    Pair startXY = sq.getCoord();
+                    if(pieceHasPathToKing(pieceHere, startXY, kingXY)) return true;
+                    else ;
                 }
             }
         }
-        return false;
+        return false; //we iterated through the whole board and no square has a piece that is putting current player in check
     }
-
-    private boolean loopThruPieces(Square[][] bd, Pair kingXY, int i, int j) { // might have to loop through squares cuz Pieces
-        if(bd[i][j].hasPiece() && !isOwnedPiece(bd[i][j].getPiece()) 
-                && bd[i][j].getPiece().validOrNah(bd[i][j].getCoord(), kingXY)) 
-                    return true;
-        
-        if(j < bd[i].length -1){
-            return loopThruPieces(bd, kingXY, i, j+1);
-        }
-        else if(i < bd.length - 1){
-            return loopThruPieces(bd, kingXY, i+1, 0);
-        }
-        else{
-            return loopThruPieces(bd, kingXY, i-2, j-2);
-        }
-        
+    private boolean pieceHasPathToKing(Piece startPiece, Pair startXY, Pair kingXY){
+        return !isOwnedPiece(startPiece) && startPiece.validOrNah(startXY, kingXY) 
+                && checkPiecesPath(startPiece.getPiecePath(startXY, kingXY),startXY, kingXY); //because the pawn hasnt moved yet when we loop 
+                //through to see the path it is blocked by intermediary movement
+                //is it valid path 
     }
 
     private Pair getKingPos(Square[][] bd, int rank, int file) { // recursive function to find where king is, better performance than nested fors?
 
         Piece temp = bd[rank][file].getPiece();
         if (temp != null && temp.getColor() == currentplayer && temp.getType() == PieceType.KING) {
-            //System.out.println("found it "+ bd[rank][file].getCoord());
             return bd[rank][file].getCoord();
         } else {
-            if (file < bd[rank].length - 1) { // still has some bugs stackoverflowing in some instances
+            if (file < bd[rank].length - 1) { 
                 return getKingPos(bd, rank, file + 1);
             } else if (rank < bd.length - 1) {
-                return getKingPos(bd, rank + 1, 0);
+                return getKingPos(bd, rank + 1, 0); //stack overflow error still here
             } else {
                 return getKingPos(bd, rank-2, file-2);
             }
         }
-
     }
 
     private void addKilledPiece(Piece killedPiece) { //
@@ -288,6 +300,21 @@ public class Game {
         return this.previousMoves;
     }
 
+    private void undoMove(){
+        Move previous = getPrevMove();
+        if(previous.getStartingPair() != previous.getEndingPair()){
+            addMove(previous.getEndingSquare(), previous.getStartingSquare(), previous.getPieceMoved(), null);
+            if(previous.isCapture()){
+                board.setPiece(previous.getEndingSquare(),previous.getPieceKilled());
+            }
+        }
+        previousMoves.remove(getPrevMove());
+        switchCurrentPlayer();
+    }
+
+    private Move getPrevMove(){
+        return previousMoves.get(current-1);
+    }
     private void checkIfKing(Piece killed) {
         if (killed.getType() == PieceType.KING)
             over = true;
@@ -306,7 +333,7 @@ public class Game {
         return this.currentplayer;
     }
 
-    private void printBoard() {
+    public void printBoard() {
         System.out.println("Current Board:");
         board.showBoard();
     }

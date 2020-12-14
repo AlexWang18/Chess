@@ -3,6 +3,7 @@ package domain.Logic;
 import java.util.Objects;
 
 import domain.Pieces.Piece;
+import domain.Pieces.PieceType;
 
 public class Square { // holds coordinates and current piece at that square if available, otherwise Piece will be null
                
@@ -20,6 +21,11 @@ public class Square { // holds coordinates and current piece at that square if a
 
     public void setPiece(Piece piece) {
         this.piece = piece;
+    }
+
+    public void killPiece(){
+        this.piece = null;
+       // this.piece.setType(PieceType.CAPTURED);
     }
 
     public Piece getPiece() {
