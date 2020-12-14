@@ -12,7 +12,9 @@ import java.util.Map;
 import domain.Logic.Color.ColorType;
 /*
     need to add enpassant and castling
-    Check detection bug bc recycling piece path method and current players move has not fully rendered so it is still temp blocking even though it will not be and cause a check  
+
+    bug with pawn capturing when in check as it is marked as a different type - solved
+
 */
 import domain.Pieces.Pawn;
 import domain.Pieces.Piece;
@@ -86,14 +88,14 @@ public class Game {
         boolean test = isOwnedPiece(startPiece);
 
         if (!test) {
-            System.out.println("You do not own " + startPiece + " at " + start.getCoord() + " silly");
+            System.out.println("You do not own " + startPiece.getReadablePiece() + " at " + start.getCoord() + " silly");
             return false;
         }
 
-        test = moveMakesCheck(start, end); //does the move cause the current player to get in check
-
+        test = moveMakesCheck(start, end) && startPiece.getType() != PieceType.KING; //does the move cause the current player to get in check
+        //if they move their king while in check is okay
         if(test){
-            System.out.println("Cannot move " + startPiece.getReadablePiece() + "at" + startXY.getReadablePair() + " as you are in check");
+            System.out.println("Cannot move " + startPiece.getReadablePiece() + " at " + startXY.getReadablePair() + " as you are in check");
             return false;
         }
 
@@ -111,11 +113,11 @@ public class Game {
             // first check if the Piece can make the move, than look for barriers, and then
             // go to add move which checks its further validity
 
-            testPawn = pawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece)
-                    && checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
+            testPawn = pawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece) 
+                    && checkPiecesPath(pawn.getPiecePath(startXY, endXY), startXY, endXY);
 
             if (testPawn) {
-                wasValidMove(start, end, startPiece, killedPiece); //passes
+                wasValidMove(start, end, pawn, killedPiece); //passes
                 return true;
             } else {
                 System.out.println("Illegal pawn manuever at " + start.getCoord().getReadablePair());
@@ -146,7 +148,7 @@ public class Game {
         start.killPiece();
 
         if(isCheck(end.getPiece().getColor())){
-            start.setPiece(end.getPiece()); //reset it 
+            start.setPiece(end.getPiece()); //reset / undoes it
             end.setPiece(temp);
             return true;
         }else{
@@ -170,31 +172,6 @@ public class Game {
             addKilledPiece(killedPiece);
         }
         previousMoves.add(new Move(start, end, startPiece, killedPiece)); //killedPiece could be null, 
-    }
-
-    private boolean isCheckMate(){
-        if(!isCheck(currentplayer)) return false;
-        Square[][] bd = board.getBoard();
-        List<Pair> possibleKingPos = new ArrayList<>(8);
-        Pair currentKingPos = getKingPos(board.getBoard(), 0, 0);
-        int x = currentKingPos.getX();
-        int y = currentKingPos.getY();
-        //if not at end or edge of the board 8 possible moves
-        for(int rank = 0; rank < 3; rank++){ //right
-            if(!bd[x+1][y+rank].hasPiece())
-                possibleKingPos.add(new Pair(x+1, y+rank));
-            
-        }
-        for(int rank = 0; rank < 3; rank++){ //left
-            if(!bd[x-1][y+rank].hasPiece())
-                possibleKingPos.add(new Pair(x-1, y+rank));
-        }
-        for(int rank = 0; rank < 2; rank++){ //left
-            if(!bd[x][y+rank].hasPiece())
-                possibleKingPos.add(new Pair(x-1, y+rank));
-        }
-        return false;
-        //get current King moves, 
     }
 
     private boolean isPawn(Piece startPiece) {
@@ -334,7 +311,6 @@ public class Game {
     }
 
     public void printBoard() {
-        System.out.println("Current Board:");
         board.showBoard();
     }
 
@@ -345,4 +321,30 @@ public class Game {
             currentplayer = ColorType.White;
         }
     }
+
+/*    private boolean isCheckMate(){
+        if(!isCheck(currentplayer)) return false;
+        Square[][] bd = board.getBoard();
+        List<Pair> possibleKingPos = new ArrayList<>(8);
+        Pair currentKingPos = getKingPos(board.getBoard(), 0, 0);
+        int x = currentKingPos.getX();
+        int y = currentKingPos.getY();
+        //if not at end or edge of the board 8 possible moves
+        for(int rank = 0; rank < 3; rank++){ //right
+            if(!bd[x+1][y+rank].hasPiece())
+                possibleKingPos.add(new Pair(x+1, y+rank));
+            
+        }
+        for(int rank = 0; rank < 3; rank++){ //left
+            if(!bd[x-1][y+rank].hasPiece())
+                possibleKingPos.add(new Pair(x-1, y+rank));
+        }
+        for(int rank = 0; rank < 2; rank++){ //left
+            if(!bd[x][y+rank].hasPiece())
+                possibleKingPos.add(new Pair(x-1, y+rank));
+        }
+        return false;
+        //get current King moves, 
+    } */
+
 }

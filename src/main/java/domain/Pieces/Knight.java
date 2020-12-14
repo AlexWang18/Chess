@@ -35,8 +35,7 @@ public class Knight extends Piece {
 
     @Override
     public List<Pair> getPiecePath(Pair start, Pair end) {
-        //need to implement
-        return new ArrayList<>();
+        return new ArrayList<>(); //can jump so return an empty list as we do not need to check for pieces in the way
     }
 
     @Override

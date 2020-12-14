@@ -44,10 +44,13 @@ public class Queen extends Piece {
         int length = 0;
         List<Pair> path = new ArrayList<>();
 
-        if (Math.abs(endy - starty) == Math.abs(endx - startx)) { // diagnals
+        if (Math.abs(endy - starty) == Math.abs(endx - startx)) { // diagnals, use sig num 
             length = Math.abs(endy - starty);
+            int signX = Integer.signum(endx - startx); // direction of the move, left or right
+            int signY = Integer.signum(endy - starty);
+
             for (int i = 0; i < length; i++) {
-                path.add(i, new Pair(Math.min(startx, endx) + i, Math.min(starty, endy) + i));
+                path.add(i, new Pair(startx + (i*signX), starty + (i * signY)));
             }
 
         } else {

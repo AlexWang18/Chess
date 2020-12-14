@@ -2,12 +2,12 @@ package domain.Logic;
 
 import java.util.Arrays;
 
-
 import domain.Logic.Color.ColorType;
 import domain.Pieces.Bishop;
 import domain.Pieces.King;
 import domain.Pieces.Knight;
 import domain.Pieces.Pawn;
+import domain.Pieces.Piece;
 import domain.Pieces.Queen;
 import domain.Pieces.Rook;
 
@@ -27,6 +27,7 @@ public class Board { //handles displaying the board and subsequent changes
             }
         }
     }
+
     public void setWhitePieces(){
         for (int file = 0; file < bd.length; file++) {
             bd[6][file].setPiece(new Pawn(ColorType.White));
@@ -40,6 +41,7 @@ public class Board { //handles displaying the board and subsequent changes
 		bd[7][3].setPiece(new Queen(ColorType.White));
 		bd[7][4].setPiece(new King(ColorType.White));
     }
+
     public void setBlackPieces(){
         for (int file = 0; file < bd.length; file++) {
             bd[1][file].setPiece(new Pawn(ColorType.Black));
@@ -53,16 +55,20 @@ public class Board { //handles displaying the board and subsequent changes
         bd[0][3].setPiece(new Queen(ColorType.Black));
         bd[0][4].setPiece(new King(ColorType.Black));
     }
+    public void setPiece(Square start, Piece piece){
+        start.setPiece(piece);
+    }
+
     public Square[][] getBoard(){
         return this.bd;
     }
     
     public void showBoard(){
-        System.out.println("\tBlack");
+        //System.out.println("\tBlack");
         for (int i = 0; i < bd.length; i++) {
             System.out.println((i+1) +" " +Arrays.toString(bd[i]).replaceAll("\\[|]|,", "")); //print each bd string rep
         }
         System.out.println("  a b c d e f g h"); 
-        System.out.println("\tWhite");
+        //System.out.println("\tWhite");
     }
 }

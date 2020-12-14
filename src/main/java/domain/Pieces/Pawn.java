@@ -74,12 +74,18 @@ public class Pawn extends Piece {
         int startx = start.getX();
         int starty = start.getY();
         int endy = end.getY();
+        int endx = end.getX();
         int length = Math.abs(end.getY() - start.getY()); 
         Pair[] temparr = new Pair[length];
 
+        if(startx != endx && Math.abs(endy - starty) == 1){
+            System.out.println(start.getReadablePair()+"," + end.getReadablePair());
+            return Arrays.asList(start, end);
+        }
+
         for (int i = length; i > 0; i--) { //moving forward
-            int y = Math.min(starty, endy) + i; //not behaving properly c         
-            temparr[i-1] = new Pair(startx, y);
+            int y = Math.min(starty, endy); //not behaving properly c         
+            temparr[i-1] = new Pair(startx, y + i);
         }
         /*
         add support for capturing 1 up 1 side

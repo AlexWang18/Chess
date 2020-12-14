@@ -84,13 +84,16 @@ public class UI {
                 if (!game.validMove(startfile, startrank, endfile, endrank))
                     tellError();
                 else{
-                    assert true; //move went thru
+                    assert true; //move went thru, could just show previous move
+                    game.getMoves();
                 }
 
             } catch (InputMismatchException exception) {
                 System.out.println("Error occured in scanning users input   ");
             }
-            game.getMoves();
+            finally{
+                game.printBoard();
+            }
         }
     }
 
