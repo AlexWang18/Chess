@@ -81,7 +81,7 @@ public class UI {
                 int endfile = endingPair.getX();
                 int endrank = endingPair.getY();
 
-                if (!game.validMove(startfile, startrank, endfile, endrank))
+                if (!game.tryMove(startfile, startrank, endfile, endrank))
                     tellError();
                 else{
                     assert true; //move went thru, could just show previous move

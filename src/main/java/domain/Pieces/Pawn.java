@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import domain.Logic.Color.*;
+import domain.Logic.Move;
 import domain.Logic.Pair;
 
 public class Pawn extends Piece {

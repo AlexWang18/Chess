@@ -56,7 +56,7 @@ public class Pair {
 		return 17 * this.hashCode() * positionX - positionY;
 	}
 	
-	public String getReadablePair() {
+	private String getReadablePair() {
 		String parsedString = "";
 		parsedString = (char) (positionX + 'a') + Integer.toString(positionY + 1);
 		return parsedString;
