@@ -80,7 +80,7 @@ public class Pawn extends Piece {
         Pair[] temparr = new Pair[length];
 
         if(startx != endx && Math.abs(endy - starty) == 1){
-            System.out.println(start.getReadablePair()+"," + end.getReadablePair());
+            System.out.println(start+"," + end);
             return Arrays.asList(start, end);
         }
 

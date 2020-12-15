@@ -58,8 +58,8 @@ public class Game {
         printBoard();
     }
 
-    public boolean notDone() {
-        return !over;
+    public boolean isCheckMate() {
+        return over;
     }
 
     public boolean tryMove(int startx, int starty, int endx, int endy) { // need checkmate detection, refactor ifs into funcs
@@ -73,7 +73,7 @@ public class Game {
         Piece startPiece = start.getPiece(); // get the pieces at those squares
         Piece killedPiece = end.getPiece();
 
-        if(!checkValidMove(temp, start, end, startPiece, killedPiece)) return false;
+        if(!checkValidMove(start, end, startPiece, killedPiece)) return false;
 
         //check castling + promotion
         boolean testPawn = isPawn(startPiece);
@@ -87,7 +87,7 @@ public class Game {
         }
     }
 
-    private boolean checkValidMove(Square[][] bd, Square start, Square end, Piece startPiece, Piece killedPiece){
+    private boolean checkValidMove(Square start, Square end, Piece startPiece, Piece killedPiece){
     
         if (start.equals(end)) {
             Errors.displayNoMovement();
@@ -112,8 +112,12 @@ public class Game {
             System.out.println("Cannot move " + startPiece.getReadablePiece() + " at " + start.getCoord() + " as you are in check");
             return false;
         }
+        else if(moveMakesCheck(start, end)){ //not sure if best practice to have my checkout detection with this, could be just a bad king move
+            over = true;
+        }
 
         test = isFriendlyFire(startPiece, killedPiece);
+
         if (test) {
             System.out.println("Cannot take your own piece silly");
             return false;
@@ -142,7 +146,6 @@ public class Game {
         addMove(start, end, startPiece, killedPiece);
         switchCurrentPlayer();
         current++; 
-        //printBoard();
         //showScore();
     }
 
@@ -278,6 +281,7 @@ public class Game {
         }
         return false; //we iterated through the whole board and no square has a piece that is putting current player in check
     }
+
     private boolean pieceHasPathToKing(Piece startPiece, Pair startXY, Pair kingXY){
         return !isOwnedPiece(startPiece) && startPiece.validOrNah(startXY, kingXY) 
                 && checkPiecesPath(startPiece.getPiecePath(startXY, kingXY),startXY, kingXY); //because the pawn hasnt moved yet when we loop 
@@ -320,6 +324,9 @@ public class Game {
 
     private void undoMove(){
         Move previous = getPrevMove();
+
+        if(previous == null) return;
+
         if(previous.getStartingPair() != previous.getEndingPair()){
             addMove(previous.getEndingSquare(), previous.getStartingSquare(), previous.getPieceMoved(), null);
             if(previous.isCapture()){
@@ -334,6 +341,7 @@ public class Game {
         if(previousMoves.isEmpty()) return null;
         return previousMoves.get(current-1);
     }
+
     private void checkIfKing(Piece killed) {
         if (killed.getType() == PieceType.KING)
             over = true;
@@ -353,7 +361,9 @@ public class Game {
     }
 
     public void printBoard() {
+        System.out.println("\t Black");
         board.showBoard();
+        System.out.println("\t White");
     }
 
     private void switchCurrentPlayer() {

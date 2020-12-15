@@ -45,7 +45,7 @@ public class UI {
     }
 
     private void getMoves() {
-        while (game.notDone()) {
+        while (!game.isCheckMate()) {
             try {
                 System.out.print(game.getTurn() + "'s turn, ");
 
@@ -58,7 +58,7 @@ public class UI {
                 Pair startingPair = getPair(input1.toLowerCase());
 
                 if(!checkPair(startingPair)){
-                    System.out.println("Invalid square to move to at " + startingPair.getReadablePair() + " retry!");
+                    System.out.println("Invalid square to move to at " + startingPair + " retry!");
                     continue;
                 }
 
@@ -74,7 +74,7 @@ public class UI {
                 Pair endingPair = getPair(input2.toLowerCase());
 
                 if (!checkPair(endingPair)) {
-                    System.out.println("Invalid square to move to at " + endingPair.getReadablePair() + " retry!");
+                    System.out.println("Invalid square to move to at " + endingPair + " retry!");
                     continue;
                 }
 
