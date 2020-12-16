@@ -76,7 +76,11 @@ public class Game {
 
         Piece startPiece = start.getPiece(); // get the pieces at those squares
         Piece killedPiece = end.getPiece();
-        if(startPiece == null) return false;
+
+        if (startPiece == null) {
+            Errors.noSuchPieceExists(start);
+            return false;
+        }
         //if (!checkSoundMove(start, end, startPiece, killedPiece)) return false;
 
         boolean testPawn = isPawn(startPiece);
@@ -102,11 +106,6 @@ public class Game {
 
         if (start.equals(end)) {
             Errors.displayNoMovement();
-            return false;
-        }
-
-        if (startPiece == null) {
-            System.out.println("No piece exists at " + start.getCoord());
             return false;
         }
 
@@ -144,7 +143,7 @@ public class Game {
         start.killPiece();
         boolean causedCheck = false; 
 
-        if (isCheck(end.getPiece().getColor())) { //if the players move would have caused a check -bugging out b
+        if (isCheck()) { //if the players move would have caused a check -bugging out b
             causedCheck = true;
         }
         start.setPiece(end.getPiece()); // reset it back into place
@@ -153,7 +152,7 @@ public class Game {
         return causedCheck;
     }
 
-    private boolean isCheck(ColorType testColor) { // iterate through pieces to find king and its location then iterate
+    private boolean isCheck() { // iterate through pieces to find king and its location then iterate
                                                    // through opposite colors pieces to see if threatens king
         Pair kingXY = null;
         
@@ -176,11 +175,11 @@ public class Game {
         return check;
     }
 
-    private boolean isValidPromotion(Piece pawn, Square start, Square end) {
+    private boolean isValidPromotion(Piece pawn, Square start, Square end) { //not working for left captures
         Pair startXY = start.getCoord();
         Pair endXY = end.getCoord();
-        if (end.hasPiece() && startXY.getX() == endXY.getX())
-            return false; // cannot move straight
+        if (startXY.getX() == endXY.getX() && end.hasPiece())
+            return false; // cannot move straight with something in the way
 
         if (pawn.validOrNah(startXY, endXY)) {
             return atEndOfBoard(pawn, endXY);

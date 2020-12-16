@@ -40,9 +40,11 @@ public class Pawn extends Piece {
     }
 
     private boolean doTestsWhite(int startx, int starty, int endx, int endy, Piece killed) {
-        if (starty == 6) {
-            return starty - endy <= 2 && startx == endx;
+
+        if(starty-endy <= 2 && Math.abs(startx - endx) == 0){ //first move 
+            return starty == 6;
         }
+
         if (starty - endy > 1 || startx - endx > 1) // too large
             return false;
         else if (starty - endy < 0) // going backwards
@@ -58,8 +60,10 @@ public class Pawn extends Piece {
     }
 
     private boolean doTestsBlack(int startx, int starty, int endx, int endy, Piece killed) {
-        if (starty == 1)
-            return endy - starty <= 2 && startx == endx;
+        if(endy - starty <= 2 && Math.abs(startx - endx) == 0){ 
+            return starty == 1;
+        }
+        
         if (endy - starty > 1 || endx - startx > 1)
             return false;
         else if (endy - starty < 0 || endx < startx)

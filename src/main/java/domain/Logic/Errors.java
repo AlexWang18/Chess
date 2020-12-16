@@ -15,5 +15,8 @@ public class Errors {
         System.out.println("Illegal move at " + start.getCoord() + " " + piece.getType()
                         + " cannot make those manuevers"); 
     }
+    public static void noSuchPieceExists(Square start){
+        System.out.println("No piece exists at " + start.getCoord());
+    }
 
 }
