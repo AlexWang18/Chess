@@ -41,7 +41,7 @@ public class UI {
         * add method parameter to specify ruleset?
          */
     private boolean isInputValid(String input){
-        return !(input.isBlank() || input.length() > 2);
+        return !(input.isBlank() || input.length() < 2); 
     }
 
     private void getMoves() {
@@ -85,7 +85,7 @@ public class UI {
                     tellError();
                 else{
                     assert true; //move went thru, could just show previous move
-                    game.getMoves();
+                    System.out.println(game.getPrevMove());
                 }
 
             } catch (InputMismatchException exception) {
@@ -95,6 +95,7 @@ public class UI {
                 game.printBoard();
             }
         }
+        game.getMoves();
     }
 
     private void tellError() {

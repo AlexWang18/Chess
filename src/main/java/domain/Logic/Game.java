@@ -11,7 +11,8 @@ import java.util.Map;
 
 import domain.Logic.Color.ColorType;
 /*
-    need to add enpassant and castling
+    need to add castling- check multiple squares for check, and if the king or rook has moved yet. if king also doesnt go thru a threatened sqiare
+    add promotion for pawns
 
     bug with pawn capturing when in check as it is marked as a different type - solved
 
@@ -73,21 +74,88 @@ public class Game {
         Piece startPiece = start.getPiece(); // get the pieces at those squares
         Piece killedPiece = end.getPiece();
 
-        if(!checkValidMove(start, end, startPiece, killedPiece)) return false;
+        //if(!checkValidMove(start, end, startPiece, killedPiece)) return false;
 
-        //check castling + promotion
         boolean testPawn = isPawn(startPiece);
-        // special case for pawns add enpassant in valid or nah implementation, not sure actually
+        // special case
         if (testPawn) {
             Pawn pawn = (Pawn) startPiece;
+            if(!checkValidMove(start, end, startPiece, killedPiece)) return false;
+            //promotionm
             return checkPawnMove(start, end, pawn, killedPiece);
         }
-        else{
+        if(checkValidCastling(start, end)){ //check pieces path with rook vertically
+            castlePieces(start,end);
+            return true;
+        }
+        else if(checkValidMove(start, end, startPiece, killedPiece)){
             return checkStandardMove(start, end, startPiece, killedPiece);
         }
+        //promotion
+        return false;
     }
 
-    private boolean checkValidMove(Square start, Square end, Piece startPiece, Piece killedPiece){
+    private void castlePieces(Square kingSQ, Square rookSQ) {
+        Piece king = kingSQ.getPiece();
+        Piece rook = rookSQ.getPiece();
+        if(rookSQ.getCoord().getX() == 0 && rookSQ.getCoord().getY() == 0){ //queen side black
+            addMove(kingSQ, board.getBoard()[0][2], king, null);
+            addMove(rookSQ, board.getBoard()[0][3], rook, null);
+        }
+        if(rookSQ.getCoord().getX() == 7 && rookSQ.getCoord().getY() == 0){ //short castle black
+            addMove(kingSQ, board.getBoard()[0][6], king, null);
+            addMove(rookSQ, board.getBoard()[0][5], rook, null);
+        }
+        if(rookSQ.getCoord().getX() == 0 && rookSQ.getCoord().getY() == 7){ //
+            addMove(kingSQ, board.getBoard()[7][2], king, null);
+            addMove(rookSQ, board.getBoard()[7][3], rook, null);
+        }
+        if(rookSQ.getCoord().getX() == 7 && rookSQ.getCoord().getY() == 7){
+            addMove(kingSQ, board.getBoard()[7][6], king, null);
+            addMove(rookSQ, board.getBoard()[7][5], rook, null);
+        }
+        System.out.println(king.getColor() + " castled!");
+        switchCurrentPlayer();
+    }
+
+    private boolean checkValidCastling(Square kingSQ, Square rookSQ) {
+        if(!kingSQ.hasPiece() || !rookSQ.hasPiece()){
+            return false;
+        }
+        if(hasPieceMoved(kingSQ) || hasPieceMoved(rookSQ)){ //must have stayed in starting pos
+            return false;
+        }
+        
+        Piece king = kingSQ.getPiece();
+        Piece rook = rookSQ.getPiece();
+
+        if(!rook.validOrNah(rookSQ.getCoord(), kingSQ.getCoord())){ //did the rook do horizontal cross
+            return false;
+        }
+
+        if(!checkPiecesPath(rook.getPiecePath(rookSQ.getCoord(), kingSQ.getCoord()), rookSQ.getCoord(), kingSQ.getCoord())){ //stuff in the way still
+            System.out.println("You need to move your other pieces out of the way before castling!");
+            return false;
+        }
+
+         //for the length of the kings move check each square if threatened
+
+        return king.getType() == PieceType.KING && rook.getType() == PieceType.ROOK; //can castle, currently returning true
+           // return castlingCond(kingSQ.getCoord(), rookSQ.getCoord());
+        
+    }
+
+    private boolean hasPieceMoved(Square sq) { // check if the square has been utilized for a move
+
+        for (Move moves : previousMoves) {
+            if(moves.getStartingPair().equals(sq.getCoord()) || moves.getEndingPair().equals(sq.getCoord())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkValidMove(Square start, Square end, Piece startPiece, Piece killedPiece) {
     
         if (start.equals(end)) {
             Errors.displayNoMovement();
@@ -251,7 +319,7 @@ public class Game {
             } // Returns false if there are pieces blocking it from moving
         }
         return true;
-    }
+    }   
 
     private boolean isCheck(ColorType testColor) { // iterate through pieces to find king and its location then iterate through 
                                 // oppositite colors pieces to see if they have a valid path from present location to King,
@@ -300,7 +368,7 @@ public class Game {
             } else if (rank < bd.length - 1) {
                 return getKingPos(bd, rank + 1, 0); //stack overflow error still here
             } else {
-                return getKingPos(bd, rank-2, file-2);
+                return getKingPos(bd, 0, 0);
             }
         }
     }
@@ -337,7 +405,7 @@ public class Game {
         switchCurrentPlayer();
     }
 
-    private Move getPrevMove(){
+    public Move getPrevMove(){
         if(previousMoves.isEmpty()) return null;
         return previousMoves.get(current-1);
     }
