@@ -113,8 +113,7 @@ public class Game {
         boolean test = isOwnedPiece(startPiece);
 
         if (!test) {
-            System.out
-                    .println("You do not own " + startPiece.getReadablePiece() + " at " + start.getCoord() + " silly");
+            System.out.println("You do not own " + startPiece.getReadablePiece() + " at " + start.getCoord() + " silly");
             return false;
         }
 
@@ -159,9 +158,22 @@ public class Game {
         Pair kingXY = null;
         
         kingXY = getKingPos(board.getBoard()); // Find current players Kings position on the board
-        
-        // delegate looping to another func
-        return loopThruPieces(board.getBoard(), kingXY);
+        Square[][] bd = board.getBoard();
+        boolean check = false; 
+        for (int i = 0; i < bd.length; i++) {
+            for (int j = 0; j < bd.length; j++) {
+                Square sq = bd[i][j];
+                if (sq.hasPiece()) {
+                    Piece pieceHere = sq.getPiece();
+                    Pair startXY = sq.getCoord();
+                    if (pieceHasPathToKing(pieceHere, startXY, kingXY)){
+                        check = true;
+                        break;}
+                    else;
+                }
+            }
+        }
+        return check;
     }
 
     private boolean isValidPromotion(Piece pawn, Square start, Square end) {
@@ -369,26 +381,8 @@ public class Game {
         return true;
     }
 
-    private boolean loopThruPieces(Square[][] bd, Pair kingXY) { // Will return true if the current iterated piece can attack the king without things in the way
-        for (int i = 0; i < bd.length; i++) {
-            for (int j = 0; j < bd.length; j++) {
-
-                Square sq = bd[i][j];
-                if (sq.hasPiece()) {
-                    Piece pieceHere = sq.getPiece();
-                    Pair startXY = sq.getCoord();
-                    if (pieceHasPathToKing(pieceHere, startXY, kingXY))
-                        return true;
-                    else
-                        ;
-                }
-            }
-        }
-        return false; // we iterated through the whole board and no square has a piece that is putting
-                      // current player in check
-    }
-
     private boolean pieceHasPathToKing(Piece startPiece, Pair startXY, Pair kingXY) {
+        
         return !isOwnedPiece(startPiece) && startPiece.validOrNah(startXY, kingXY)
                 && checkPiecesPath(startPiece.getPiecePath(startXY, kingXY), startXY, kingXY); // because the pawn hasnt moved yet when we loop
                                                                                                
