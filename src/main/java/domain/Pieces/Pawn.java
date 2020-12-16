@@ -24,12 +24,14 @@ public class Pawn extends Piece {
         return validOrNah(start, end, null);
     }
 
-    public boolean validOrNah(Pair start, Pair end, Piece killed) {
-        int starty = start.getY();
-        int startx = start.getX();
+    public boolean validOrNah(Pair startXY, Pair endXY, Piece killed) {
+        if(startXY.equals(endXY)) return false;
 
-        int endx = end.getX();
-        int endy = end.getY();
+        int starty = startXY.getY();
+        int startx = startXY.getX();
+
+        int endx = endXY.getX();
+        int endy = endXY.getY();
 
         if (this.getColor() == ColorType.White)
             return doTestsWhite(startx, starty, endx, endy, killed);
@@ -47,10 +49,11 @@ public class Pawn extends Piece {
             return false;
         else if (startx - endx > 0 && endy == starty) // going to side without taking
             return false;
-        else if (killed == null)
-            return true;
         else if (Math.abs(startx - endx) == 1 && starty - endy == 1) // valid capture move
             return true;
+        else if(killed == null)
+            return true;
+        
         return false;
     }
 
@@ -63,10 +66,11 @@ public class Pawn extends Piece {
             return false;
         else if (endx - startx > 0 && endy == starty)
             return false;
-        else if (killed == null)
-            return true;
         else if (Math.abs(endx - startx) == 1 && endy - starty == 1)
             return true;
+        else if(killed == null)
+            return true;
+        
         return false;
     }
 
@@ -79,18 +83,15 @@ public class Pawn extends Piece {
         int length = Math.abs(end.getY() - start.getY()); 
         Pair[] temparr = new Pair[length];
 
-        if(startx != endx && Math.abs(endy - starty) == 1){
-            System.out.println(start+"," + end);
+        if(startx != endx && Math.abs(endy - starty) == 1){ //capture
             return Arrays.asList(start, end);
         }
 
         for (int i = length; i > 0; i--) { //moving forward
-            int y = Math.min(starty, endy); //not behaving properly c         
+            int y = Math.min(starty, endy);    
             temparr[i-1] = new Pair(startx, y + i);
         }
-        /*
-        add support for capturing 1 up 1 side
-        */
+        
         return Arrays.asList(temparr);
     }
 

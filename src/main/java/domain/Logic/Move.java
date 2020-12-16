@@ -52,7 +52,7 @@ public class Move { // sets target square to the moving piece and sets the piece
 
         if (piecekilled != null) {
                 setPieces();
-                System.out.println(piecekilled.getColor()+"'s " + piecekilled.getType().name() + " has been captured by "+piecemoved.getColor()+"'s " + piecemoved.getType().name());
+                //System.out.println(piecekilled.getColor()+"'s " + piecekilled.getType().name() + " has been captured by "+piecemoved.getColor()+"'s " + piecemoved.getType().name());
            //     if(piecekilled.getType() != PieceType.KING)
            //         piecekilled.setType(PieceType.CAPTURED); //changing this memory boxes type effectively should i do this could have repruccssions l8r
         }
