@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import domain.Logic.Color.*;
-import domain.Logic.Move;
 import domain.Logic.Pair;
 
 public class Pawn extends Piece {
@@ -16,6 +15,7 @@ public class Pawn extends Piece {
 
     @Override
     public String toString() {
+        if(super.getColor() == ColorType.Black) return "p";
         return "P";
     }
 
@@ -41,7 +41,7 @@ public class Pawn extends Piece {
 
     private boolean doTestsWhite(int startx, int starty, int endx, int endy, Piece killed) {
 
-        if(starty-endy <= 2 && Math.abs(startx - endx) == 0){ //first move 
+        if(starty-endy == 2 && Math.abs(startx - endx) == 0){ //first move 
             return starty == 6;
         }
 
@@ -60,7 +60,7 @@ public class Pawn extends Piece {
     }
 
     private boolean doTestsBlack(int startx, int starty, int endx, int endy, Piece killed) {
-        if(endy - starty <= 2 && Math.abs(startx - endx) == 0){ 
+        if(endy - starty == 2 && Math.abs(startx - endx) == 0){ 
             return starty == 1;
         }
         

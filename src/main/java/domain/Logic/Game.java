@@ -135,13 +135,14 @@ public class Game {
         return true;
     }
 
-    private boolean moveMakesCheck(Square start, Square end) { // not sure about logic here, set the ending square piece to point to moved piece, remove the starting squares piece
+    private boolean moveMakesCheck(Square start, Square end) { 
         Piece temp = end.getPiece();
         end.setPiece(start.getPiece());
         start.killPiece();
         boolean causedCheck = false; 
+        Pair kingXY = getKingPos(board.getBoard());
 
-        if (isCheck()) { //if the players move would have caused a check -bugging out b
+        if (isPieceBeingAttkd(kingXY)) { 
             causedCheck = true;
         }
         start.setPiece(end.getPiece()); // reset it back into place
@@ -150,13 +151,7 @@ public class Game {
         return causedCheck;
     }
 
-    private boolean isCheck() { // iterate through pieces to find king and its location then iterate
-                                                   // through opposite colors pieces to see if threatens king
-        Pair kingXY = null;
-        kingXY = getKingPos(board.getBoard()); // Find current players Kings position on the board
-        return loop(kingXY);
-    }
-    private boolean loop(Pair endXY){
+    private boolean isPieceBeingAttkd(Pair endXY){
         Square[][] bd = board.getBoard();
         for (int rank = 0; rank < bd.length; rank++) {
             for (int file = 0; file < bd.length; file++) {
@@ -164,12 +159,21 @@ public class Game {
                 if (sq.hasPiece()) {
                     Piece pieceHere = sq.getPiece();
                     Pair startXY = sq.getCoord();
-                    if (pieceHasPathToPair(pieceHere, startXY, endXY))
+                    if (pieceHasValidRoute(pieceHere, startXY, endXY))
                         return true;
                 }
             }
         }
         return false;
+    }
+
+    /*
+    will return false, when it is an owned piece, the attacking move is invalid, and when there are obstructions in the then validated path
+    */
+    private boolean pieceHasValidRoute(Piece startPiece, Pair startXY, Pair kingXY) {
+
+        return !isOwnedPiece(startPiece) && startPiece.validOrNah(startXY, kingXY)
+                && checkPiecesPath(startPiece.getPiecePath(startXY, kingXY), startXY, kingXY); 
     }
 
     private boolean isValidPromotion(Piece pawn, Square start, Square end) { //not working for left captures
@@ -213,23 +217,23 @@ public class Game {
             Errors.piecesBlockingCastle();
             return false;
         }
+
         if(kingIsThreatened(rookSQ.getCoord(), kingSQ.getCoord())){
-            
             return false;
         }
 
-        return king.getType() == PieceType.KING && rook.getType() == PieceType.ROOK;
-                                                                                    
+        return king.getType() == PieceType.KING && rook.getType() == PieceType.ROOK;                                                                   
     }
 
     //
     private boolean kingIsThreatened(Pair rookXY, Pair kingXY) {
         int length = Math.abs(rookXY.getX() - kingXY.getX());
-        int minpos = Math.min(rookXY.getX(), kingXY.getX()); //start at leftmost pos and iterate for castle length
+        int minpos = Math.min(rookXY.getX(), kingXY.getX()); //start at leftmost pos 
 
-        for (int i = 0; i < length; i++) { //maybe make loop into sep func for reuse
-            Pair currentXY = new Pair(minpos + i, kingXY.getY());
-            loop(currentXY);        
+        //see if a square on the kings horiz move can be reached
+        for (int i = 0; i < length; i++) { 
+            Pair currentXY = new Pair(minpos + i, kingXY.getY()); 
+            if(isPieceBeingAttkd(currentXY)) return true;        
         }
         return false;
     }
@@ -380,9 +384,7 @@ public class Game {
         Piece startPiece = bd[startXY.getY()][startXY.getX()].getPiece();
 
         for (Pair pair : path) {
-
             if (squareIsOccupied(bd, pair, startXY, endXY)) { 
-
                 Errors.pathIsBlocked(startPiece, bd[pair.getY()][pair.getX()].getPiece(), pair);
                 return false;
             } 
@@ -391,17 +393,9 @@ public class Game {
     }
 
     private boolean squareIsOccupied(Square[][] bd, Pair pair, Pair startXY, Pair endXY){  
+
         //Ignore the start and ending position of the path - irrelevant to the validity of the path
         return bd[pair.getY()][pair.getX()].hasPiece() && (!pair.equals(startXY)) && (!pair.equals(endXY));
-    }
-
-    /*
-    will return false, when it is an owned piece, the attacking move is invalid, and when there are obstructions in the then validated path
-    */
-    private boolean pieceHasPathToPair(Piece startPiece, Pair startXY, Pair kingXY) {
-        
-        return !isOwnedPiece(startPiece) && startPiece.validOrNah(startXY, kingXY)
-                && checkPiecesPath(startPiece.getPiecePath(startXY, kingXY), startXY, kingXY); 
     }
 
     private Pair getKingPos(Square[][] bd) { 
@@ -415,22 +409,6 @@ public class Game {
             }
         }
         return null;
-    }
-
-    private Pair getKingPos(Square[][] bd, int rank, int file) { // recursive function to find where king is, better performance than nested fors?
-
-        Piece temp = bd[rank][file].getPiece();
-        if (temp != null && temp.getColor() == currentplayer && temp.getType() == PieceType.KING) {
-            return bd[rank][file].getCoord();
-        } else {
-            if (file < bd[rank].length - 1) { 
-                return getKingPos(bd, rank, file + 1);
-            } else if (rank < bd.length - 1) {
-                return getKingPos(bd, rank + 1, 0); //stack overflow error still here
-            } else {
-                return getKingPos(bd, 0, 0);
-            }
-        }
     }
 
     private void addKilledPiece(Piece killedPiece) { //

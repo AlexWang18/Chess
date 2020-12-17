@@ -3,7 +3,6 @@ package domain.UserInterface;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.InputMismatchException;
-import java.util.Scanner;
 
 import domain.Logic.Errors;
 import domain.Logic.Game;
@@ -31,21 +30,11 @@ public class UI {
         System.out.println("GG!");
     }
 
-    /*
-     * private void setMode(){
-     * System.out.println("What style of rules do you want to play?");
-     * System.out.println("Classic, Silly, or None"); String input = sc.nextLine();
-     * if(input.equals("Classic")){ visitor = new ClassicRules(); } else
-     * if(input.equals("Silly")){ visitor = new Object(); //would i encapsulate the
-     * pieces in Move, than accepting the created visitor } }
-     */
-    /*
-     * add method parameter to specify ruleset?
-     */
     private boolean isInputValid(String input) {
         return !(input.isBlank() || input.length() < 2);
     }
 
+    //Prompting for user input until game is over
     public void getMoves() throws IOException {
         while (!game.isCheckMate()) {
             try {
@@ -109,3 +98,14 @@ public class UI {
         return new Pair(input);
     }
 }
+ /*
+     * private void setMode(){
+     * System.out.println("What style of rules do you want to play?");
+     * System.out.println("Classic, Silly, or None"); String input = sc.nextLine();
+     * if(input.equals("Classic")){ visitor = new ClassicRules(); } else
+     * if(input.equals("Silly")){ visitor = new Object(); //would i encapsulate the
+     * pieces in Move, than accepting the created visitor } }
+     */
+    /*
+     * add method parameter to specify ruleset?
+     */

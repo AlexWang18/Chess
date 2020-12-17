@@ -9,7 +9,8 @@ public class Pair {
 		this.positionY = y;
 	}
 
-	public Pair(String pair) { // user input
+	public Pair(String pair) {
+		// character subtraction to get X value from char
 		this.positionX = pair.toCharArray()[0] - 'a';
 		this.positionY = Integer.parseInt(pair.substring(1, 2)) - 1;
 	}
@@ -37,18 +38,17 @@ public class Pair {
 	@Override
 	public String toString() {
 		return getReadablePair();
-		//return Integer.toString(positionX) + "," + Integer.toString(positionY);
 	}
 
 	@Override
-	public boolean equals(Object o) { //will be true when variables point to same memory or have the same X and Y values
+	public boolean equals(Object o) { //compare the X and Y fields of Pairs
 		if (o == this)
 			return true;
 		if (!(o instanceof Pair)) {
 			return false;
 		}
 		Pair otherpair = (Pair) o;
-		return positionX == otherpair.getX() && positionY == otherpair.getY();
+		return this.positionX == otherpair.getX() && this.positionY == otherpair.getY();
 	}
 
 	@Override

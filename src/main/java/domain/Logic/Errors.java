@@ -31,7 +31,7 @@ public class Errors {
         System.out.println("You need to move your other pieces out of the way before castling!");
     }
     public static void castleIsThreatened(){
-        System.out.println("You cannot castle as your King will be threatend in the process at "+ );
+        System.out.println("You cannot castle as your King will be threatend in the process at ");
     }
 
 }
