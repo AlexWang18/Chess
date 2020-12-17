@@ -21,7 +21,7 @@ public class UI {
     }
 
     public void showGreeting() {
-        System.out.println("Welcome to chess! Let's begin");
+        System.out.println("Welcome to chess! \nLowercase letters is black, and uppercase is white. \nLet's begin");
         game.startGame();
 
     }
@@ -38,7 +38,7 @@ public class UI {
     public void getMoves() throws IOException {
         while (!game.isCheckMate()) {
             try {
-                System.out.print(game.getTurn() + "'s turn, ");
+                System.out.print(game.getTurn() + " to move, ");
 
                 System.out.println("enter the square you wish to move from.");
                 String input1 = sc.readLine();
