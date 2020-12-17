@@ -1,5 +1,6 @@
 package domain.Logic;
 
+
 import java.util.Arrays;
 
 import domain.Logic.Color.ColorType;
@@ -11,8 +12,12 @@ import domain.Pieces.Piece;
 import domain.Pieces.Queen;
 import domain.Pieces.Rook;
 
-public class Board { //handles displaying the board and subsequent changes
+//handles displaying the board and subsequent changes
+
+public class Board { 
+
     private static final int SIZE = 8;
+    
     private Square[][] bd = new Square[SIZE][SIZE];
 
     public Board(){
@@ -32,6 +37,7 @@ public class Board { //handles displaying the board and subsequent changes
         for (int file = 0; file < bd.length; file++) {
             bd[6][file].setPiece(new Pawn(ColorType.White));
         } 
+
         bd[7][2].setPiece(new Bishop(ColorType.White));
 		bd[7][5].setPiece(new Bishop(ColorType.White));
 		bd[7][1].setPiece(new Knight(ColorType.White));
@@ -46,6 +52,7 @@ public class Board { //handles displaying the board and subsequent changes
         for (int file = 0; file < bd.length; file++) {
             bd[1][file].setPiece(new Pawn(ColorType.Black));
         }
+
         bd[0][2].setPiece(new Bishop(ColorType.Black)); 
         bd[0][5].setPiece(new Bishop(ColorType.Black));
         bd[0][1].setPiece(new Knight(ColorType.Black));
@@ -64,11 +71,10 @@ public class Board { //handles displaying the board and subsequent changes
     }
     
     public void showBoard(){
-        //System.out.println("\tBlack");
+        //print each individuals Square toString 
         for (int i = 0; i < bd.length; i++) {
-            System.out.println((i+1) +" " +Arrays.toString(bd[i]).replaceAll("\\[|]|,", "")); //print each bd string rep
+            System.out.println((i+1) +" " +Arrays.toString(bd[i]).replaceAll("\\[|]|,", "")); //replace the Array funky business with regex
         }
         System.out.println("  a b c d e f g h"); 
-        //System.out.println("\tWhite");
     }
 }

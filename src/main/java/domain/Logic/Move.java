@@ -4,12 +4,13 @@ package domain.Logic;
 import domain.Pieces.Piece;
 import domain.Pieces.PieceType;
 
-public class Move { // sets target square to the moving piece and sets the piece previously at that square dead... does no error detection/ collision,
-    //assuming passed parameters are valid and sound.
-    //add undo move functionality
+//
+
+public class Move { 
                     
     private Square start;
     private Square end;
+    
     private Piece piecemoved;
     private Piece piecekilled;
 
@@ -50,24 +51,24 @@ public class Move { // sets target square to the moving piece and sets the piece
 
     public void move() {
 
-        if (piecekilled != null) {
+        if(piecekilled != null) {
                 setPieces();
-                //System.out.println(piecekilled.getColor()+"'s " + piecekilled.getType().name() + " has been captured by "+piecemoved.getColor()+"'s " + piecemoved.getType().name());
+                System.out.println(piecekilled.getColor()+"'s " + piecekilled.getType().name() + " has been captured by "+piecemoved.getColor()+"'s " + piecemoved.getType().name());
            //     if(piecekilled.getType() != PieceType.KING)
            //         piecekilled.setType(PieceType.CAPTURED); //changing this memory boxes type effectively should i do this could have repruccssions l8r
         }
-        else{ //there was no captured piece
+        else{ 
             setPieces();
         }
     }
 
-    public boolean isCapture(){
-        return piecekilled != null;
-    }
-    
     private void setPieces(){
         end.setPiece(piecemoved);
         start.setPiece(null); 
+    }
+
+    public boolean isCapture(){
+        return piecekilled != null;
     }
 
     @Override 

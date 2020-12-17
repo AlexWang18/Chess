@@ -1,5 +1,7 @@
 package domain.Logic;
 
+
+
 import domain.Pieces.*;
 
 public class Errors {

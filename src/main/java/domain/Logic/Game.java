@@ -18,8 +18,6 @@ import domain.Pieces.Queen;
 
 public class Game {
 
-    public boolean over = false;
-
     private Board board;
 
     private ColorType currentplayer;
@@ -29,6 +27,8 @@ public class Game {
     private int current;
 
     private static Game g = new Game();
+
+    public boolean over = false;
 
     private Game() {
         board = new Board();
@@ -82,7 +82,6 @@ public class Game {
             return checkStandardMove(start, end, startPiece, killedPiece);
         }
 
-        // promotion
         return false;
     }
 
@@ -96,8 +95,11 @@ public class Game {
             return true;
         }
 
-        if (isValidPromotion(pawn, start, end)) { // checks if it is promotion move, could offer better signifers bc
-                                                  // just executing move says a queen made promotion
+        if (isValidPromotion(pawn, start, end)) { // checks if it is promotion move, 
+            /*
+            TODO 
+            could offer better signifers bc just executing move says a queen made promotion 
+            */
             pawn = new Queen(pawn.getColor());
             executeMove(start, end, pawn, null);
             return true;
@@ -114,6 +116,7 @@ public class Game {
             System.out.println("Illegal pawn manuever at " + start.getCoord());
             return false;
         }
+        
     }
 
     private boolean isEnPassant(Move prevMove, Pair start, Pair end, Piece pawn) {
@@ -122,25 +125,20 @@ public class Game {
         if (checkEnPassantCond(prevMove, opponentPiece, pawn))
             return false;
 
-        if (opponentPiece.getColor() == ColorType.Black && prevMove.getEndingPair().getY() == start.getY()) { // white
-                                                                                                              // captures
-                                                                                                              // black
-                                                                                                              // en
-                                                                                                              // passant
-            return end.getY() + 1 == prevMove.getEndingPair().getY() && end.getX() == prevMove.getEndingPair().getX();
+        if (opponentPiece.getColor() == ColorType.Black && prevMove.getEndingPair().getY() == start.getY()) { //white captues black enpassant
+            return end.getY() + 1 == prevMove.getEndingPair().getY() 
+                    && end.getX() == prevMove.getEndingPair().getX();
         }
 
         if (opponentPiece.getColor() == ColorType.White && prevMove.getEndingPair().getY() == start.getY()) { // black
-                                                                                                              // captures
-                                                                                                              // white
-            return end.getY() - 1 == prevMove.getEndingPair().getY() && end.getX() == prevMove.getEndingPair().getX();
+            return end.getY() - 1 == prevMove.getEndingPair().getY() 
+                    && end.getX() == prevMove.getEndingPair().getX();
         }
 
         return false;
     }
 
-    private boolean checkEnPassantCond(Move prevMove, Piece opponentPiece, Piece pawn) { // sees if it satisfies basic
-                                                                                         // prereqs
+    private boolean checkEnPassantCond(Move prevMove, Piece opponentPiece, Piece pawn) { // fails if the taken piece is not a pawn, or at proper squares 
 
         return !(!isPawn(opponentPiece) || prevMove.getEndingPair().getY() != 3 || prevMove.getEndingPair().getY() != 6
                 || opponentPiece.getColor() == pawn.getColor());
@@ -169,14 +167,15 @@ public class Game {
     }
 
     private boolean checkStandardMove(Square start, Square end, Piece startPiece, Piece killedPiece) {
-        boolean testPieceValidMove = !isPawn(startPiece) && startPiece.validOrNah(start.getCoord(), end.getCoord());
+        boolean testValidMove = !isPawn(startPiece) 
+                                        && startPiece.validOrNah(start.getCoord(), end.getCoord());
 
-        boolean testPiecePath = checkPiecesPath(startPiece.getPiecePath(start.getCoord(), end.getCoord()),
+        boolean testPath = checkPiecesPath(startPiece.getPiecePath(start.getCoord(), end.getCoord()),
                 start.getCoord(), end.getCoord());
 
-        if (testPieceValidMove && testPiecePath) {
+        if (testValidMove && testPath) {
             executeMove(start, end, startPiece, killedPiece);
-        } else if (!testPiecePath) {
+        } else if (!testPath) {
             // raise cannot hop over piece at xy
             return false;
         } else {
@@ -369,6 +368,7 @@ public class Game {
 
         return !isOwnedPiece(startPiece) && startPiece.validOrNah(startXY, kingXY)
                 && checkPiecesPath(startPiece.getPiecePath(startXY, kingXY), startXY, kingXY);
+
     }
 
     private boolean isOwnedPiece(Piece startPiece) {
@@ -395,6 +395,7 @@ public class Game {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -404,6 +405,7 @@ public class Game {
 
         return bd[pair.getY()][pair.getX()].hasPiece() && 
                 !pair.equals(startXY) && !pair.equals(endXY);
+
     }
 
     private void switchCurrentPlayer() {
@@ -418,6 +420,7 @@ public class Game {
         previousMoves.stream().distinct().forEach(move -> {
             System.out.println(move);
         });
+
         return this.previousMoves;
     }
 

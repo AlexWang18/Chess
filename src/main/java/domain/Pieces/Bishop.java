@@ -1,5 +1,7 @@
 package domain.Pieces;
 
+
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -7,6 +9,7 @@ import domain.Logic.Pair;
 import domain.Logic.Color.ColorType;
 
 public class Bishop extends Piece {
+
     public static final PieceType TYPE = PieceType.BISHOP;
 
     public Bishop(ColorType color) {
@@ -16,6 +19,7 @@ public class Bishop extends Piece {
     @Override
     public String toString() {
         if(super.getColor() == ColorType.Black) return "b";
+
         return "B";
     }
 

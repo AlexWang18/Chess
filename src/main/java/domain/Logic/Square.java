@@ -1,5 +1,7 @@
 package domain.Logic;
 
+
+
 import java.util.Objects;
 
 import domain.Pieces.Piece;
@@ -8,6 +10,7 @@ import domain.Pieces.PieceType;
 public class Square { // holds coordinates and current piece at that square if available, otherwise Piece will be null
                
     private Pair coord;
+    
     private Piece piece;
 
     public Square(Pair coord) {

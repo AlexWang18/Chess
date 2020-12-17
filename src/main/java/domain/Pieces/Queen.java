@@ -1,5 +1,7 @@
 package domain.Pieces;
 
+
+
 import domain.Logic.Color.ColorType;
 import domain.Logic.Pair;
 
@@ -16,6 +18,7 @@ public class Queen extends Piece {
     @Override
     public String toString() {
         if(super.getColor() == ColorType.Black) return "q";
+
         return "Q";
     }
 

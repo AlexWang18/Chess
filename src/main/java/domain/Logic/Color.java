@@ -1,9 +1,16 @@
 package domain.Logic;
 
+
+
 public class Color {
+
+    
     public enum ColorType{ 
         White, Black;
     }
+
+
+
     private ColorType c; //encapuslates constant type 
 
     public Color(ColorType c){

@@ -1,5 +1,7 @@
 package domain.Pieces;
 
+
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +10,7 @@ import domain.Logic.Color.ColorType;
 import domain.Logic.Pair;
 
 public class Rook extends Piece {
+    
     public static final PieceType TYPE = PieceType.ROOK;
 
     public Rook(ColorType color) {
@@ -18,6 +21,7 @@ public class Rook extends Piece {
     @Override
     public String toString() {
         if(super.getColor() == ColorType.Black) return "b";
+        
         return "R";
     }
 

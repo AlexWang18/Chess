@@ -1,5 +1,7 @@
 package domain.Pieces;
 
+
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -7,21 +9,27 @@ import domain.Logic.Color.*;
 import domain.Logic.Pair;
 
 public class Pawn extends Piece {
+
     public static final PieceType TYPE = PieceType.PAWN; // final for each instance
 
     public Pawn(ColorType color) {
+
         super(TYPE, color);
+
     }
 
     @Override
     public String toString() {
         if(super.getColor() == ColorType.Black) return "p";
+
         return "P";
     }
 
     @Override
     public boolean validOrNah(Pair start, Pair end) { // if that move with valid coordinates is allowed by rules
+
         return validOrNah(start, end, null);
+
     }
 
     public boolean validOrNah(Pair startXY, Pair endXY, Piece killed) {

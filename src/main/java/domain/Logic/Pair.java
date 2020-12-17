@@ -1,6 +1,9 @@
 package domain.Logic;
 
+
+
 public class Pair {
+
 	private int positionX;
 	private int positionY;
 

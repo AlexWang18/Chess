@@ -1,5 +1,7 @@
 package domain.Pieces;
 
+
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +10,7 @@ import domain.Logic.Pair;
 import domain.Logic.Color.ColorType;
 
 public class King extends Piece {
+
     public static final PieceType TYPE = PieceType.KING;
 
     public King(ColorType color) {
@@ -16,7 +19,7 @@ public class King extends Piece {
 
     @Override
     public String toString() {
-        return "@";
+        return "!";
     }
 
     @Override
