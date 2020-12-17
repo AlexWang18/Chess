@@ -1,28 +1,30 @@
 package domain.UserInterface;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import domain.Logic.Errors;
 import domain.Logic.Game;
 import domain.Logic.Pair;
 import domain.Pieces.Visitor;
 
 public class UI {
     private Game game;
-    private Scanner sc;
+    // private Scanner sc;
+    private BufferedReader sc;
     // private Visitor<> visitor;
 
-    public UI(Game game, Scanner sc) {
+    public UI(Game game, BufferedReader in) {
         this.game = game;
-        this.sc = sc;
+        this.sc = in;
     }
 
     public void showGreeting() {
         System.out.println("Welcome to chess! Let's begin");
         game.startGame();
 
-        getMoves();
-        gameIsOver();
     }
 
     private void gameIsOver() {
@@ -37,20 +39,20 @@ public class UI {
      * if(input.equals("Silly")){ visitor = new Object(); //would i encapsulate the
      * pieces in Move, than accepting the created visitor } }
      */
-         /*
-        * add method parameter to specify ruleset?
-         */
-    private boolean isInputValid(String input){
-        return !(input.isBlank() || input.length() < 2); 
+    /*
+     * add method parameter to specify ruleset?
+     */
+    private boolean isInputValid(String input) {
+        return !(input.isBlank() || input.length() < 2);
     }
 
-    private void getMoves() {
+    public void getMoves() throws IOException {
         while (!game.isCheckMate()) {
             try {
                 System.out.print(game.getTurn() + "'s turn, ");
 
                 System.out.println("enter the square you wish to move from.");
-                String input1 = sc.nextLine();
+                String input1 = sc.readLine();
 
                 if(!isInputValid(input1))
                     continue;
@@ -66,7 +68,7 @@ public class UI {
                 int startrank = startingPair.getY();
 
                 System.out.println("Enter the square you wish to move to.");
-                String input2 = sc.nextLine();
+                String input2 = sc.readLine();
 
                 if (!isInputValid(input2))
                     continue;
@@ -82,9 +84,9 @@ public class UI {
                 int endrank = endingPair.getY();
 
                 if (!game.tryMove(startfile, startrank, endfile, endrank))
-                    tellError();
+                    Errors.moveException();
                 else{
-                    assert true; //move went thru, could just show previous move
+                    assert true; //move went thru, 
                     System.out.println(game.getPrevMove());
                 }
 
@@ -96,10 +98,7 @@ public class UI {
             }
         }
         game.getMoves();
-    }
-
-    private void tellError() {
-        System.out.println("Move did not follow through, try again..");
+        gameIsOver();
     }
 
     private boolean checkPair(Pair p) {
