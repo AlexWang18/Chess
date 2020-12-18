@@ -60,9 +60,9 @@ public class Pawn extends Piece {
             return false;
         else if (Math.abs(endx - startx) > 0 && endy == starty) // going to side without taking
             return false;
-        else if (Math.abs(startx - endx) == 1 && starty - endy == 1) // valid capture move
+        else if (Math.abs(startx - endx) == 1 && starty - endy == 1 && killed != null) // valid capture move
             return true;
-        else if(killed == null)
+        else if(killed == null && startx == endx)
             return true;
         
         return false;
@@ -79,9 +79,9 @@ public class Pawn extends Piece {
             return false;
         else if (Math.abs(endx - startx) > 0 && endy == starty)
             return false;
-        else if (Math.abs(endx - startx) == 1 && endy - starty == 1)
+        else if (Math.abs(endx - startx) == 1 && endy - starty == 1 && killed != null)
             return true;
-        else if(killed == null)
+        else if(killed == null && startx == endx)
             return true;
         
         return false;

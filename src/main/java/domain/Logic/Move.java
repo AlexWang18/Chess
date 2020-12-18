@@ -21,8 +21,23 @@ public class Move {
         this.piecekilled = piecekilled;
         move();
     }
+    
     public Move(Square start, Square end, Piece piecemoved){
         this(start,end,piecemoved,null);
+    }
+
+    //refactor 
+    public void move() {
+        setPieces();
+    }
+
+    private void setPieces(){
+        end.setPiece(piecemoved);
+        start.setPiece(null); 
+    }
+
+    public boolean isCapture(){
+        return piecekilled != null;
     }
 
     public Piece getPieceMoved() {
@@ -47,20 +62,6 @@ public class Move {
     
     public Square getEndingSquare(){
         return this.end;
-    }
-
-    //refactor 
-    public void move() {
-        setPieces();
-    }
-
-    private void setPieces(){
-        end.setPiece(piecemoved);
-        start.setPiece(null); 
-    }
-
-    public boolean isCapture(){
-        return piecekilled != null;
     }
 
     @Override 
