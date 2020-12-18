@@ -27,24 +27,25 @@ public class Pawn extends Piece {
 
     @Override
     public boolean validOrNah(Pair start, Pair end) { // if that move with valid coordinates is allowed by rules
-
         return validOrNah(start, end, null);
 
     }
 
-    public boolean validOrNah(Pair startXY, Pair endXY, Piece killed) {
+    public boolean validOrNah(Pair startXY, Pair endXY, Piece killed) { //BUGGEd
         if(startXY.equals(endXY)) return false;
 
-        int starty = startXY.getY();
         int startx = startXY.getX();
+        int starty = startXY.getY();
 
         int endx = endXY.getX();
         int endy = endXY.getY();
+        boolean watch = false;
+        
 
-        if (this.getColor() == ColorType.White)
-            return doTestsWhite(startx, starty, endx, endy, killed);
-        else
-            return doTestsBlack(startx, starty, endx, endy, killed);
+        if (this.getColor() == ColorType.White){watch = doTestsWhite(startx, starty, endx, endy, killed); return watch;}
+            
+        else{ 
+            watch = doTestsBlack(startx, starty, endx, endy, killed); return watch;}
     }
 
     private boolean doTestsWhite(int startx, int starty, int endx, int endy, Piece killed) {
@@ -53,11 +54,11 @@ public class Pawn extends Piece {
             return starty == 6;
         }
 
-        if (starty - endy > 1 || startx - endx > 1) // too large
+        if (starty - endy > 1 || Math.abs(startx - endx) > 1) // too large
             return false;
         else if (starty - endy < 0) // going backwards
             return false;
-        else if (startx - endx > 0 && endy == starty) // going to side without taking
+        else if (Math.abs(endx - startx) > 0 && endy == starty) // going to side without taking
             return false;
         else if (Math.abs(startx - endx) == 1 && starty - endy == 1) // valid capture move
             return true;
@@ -72,11 +73,11 @@ public class Pawn extends Piece {
             return starty == 1;
         }
         
-        if (endy - starty > 1 || endx - startx > 1)
+        if (endy - starty > 1 || Math.abs(endx - startx) > 1)
             return false;
-        else if (endy - starty < 0 || endx < startx)
+        else if (endy - starty < 0)
             return false;
-        else if (endx - startx > 0 && endy == starty)
+        else if (Math.abs(endx - startx) > 0 && endy == starty)
             return false;
         else if (Math.abs(endx - startx) == 1 && endy - starty == 1)
             return true;
@@ -95,13 +96,13 @@ public class Pawn extends Piece {
         int length = Math.abs(end.getY() - start.getY()); 
         Pair[] temparr = new Pair[length];
 
-        if(startx != endx && Math.abs(endy - starty) == 1){ //capture
-            return Arrays.asList(start, end);
+        if(startx != endx && Math.abs(endy - starty) == 1){ //capture moves
+            return Arrays.asList(new Pair[] {start, end});
         }
 
-        for (int i = length; i > 0; i--) { //moving forward
+        for (int i = 0; i < length; i++) { //moving forward
             int y = Math.min(starty, endy);    
-            temparr[i-1] = new Pair(startx, y + i);
+            temparr[i] = new Pair(startx, y + i);
         }
         
         return Arrays.asList(temparr);

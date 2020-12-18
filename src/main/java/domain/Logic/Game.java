@@ -4,13 +4,15 @@ package domain.Logic;
 CRUD CLI Chess game
 *** TODO implemenet checkmate detection to automatically end game
 
+enpassant logic bug
+
 */
 
 import java.util.ArrayList;
 import java.util.List;
 
 import domain.Logic.Color.ColorType;
-
+import domain.Pieces.King;
 import domain.Pieces.Pawn;
 import domain.Pieces.Piece;
 import domain.Pieces.PieceType;
@@ -49,8 +51,12 @@ public class Game {
         return over;
     }
 
-    // Starting point of each move, returns true only if the move was valid and executed
-
+    // Starting point of each attemped move, returns true only if the move was valid and executed
+    /*
+    * param: numerical coordinates indicating the location of a move on the Board's 2D array
+    *
+    *
+    */
     public boolean tryMove(int startx, int starty, int endx, int endy) {
 
         if (!inBounds(startx, starty) || !inBounds(endx, endy))
@@ -68,16 +74,18 @@ public class Game {
             Errors.noSuchPieceExists(start);
             return false;
         }
+        //maybe check for check here
 
+         // Special case for pawns, method handles enpasssant, promotion and regular moves
         if (isPawn(startPiece)) {
-            return checkPawnMove(start, end, startPiece, killedPiece); // handles enpasssant and promotion
+            return checkPawnMove(start, end, startPiece, killedPiece);
         }
 
         if (checkValidCastling(start, end)) {
             castlePieces(start, end);
             return true;
         }
-
+        
         else if (checkSoundMove(start, end, startPiece, killedPiece)) {
             return checkStandardMove(start, end, startPiece, killedPiece);
         }
@@ -86,22 +94,21 @@ public class Game {
     }
 
     private boolean checkPawnMove(Square start, Square end, Piece pawn, Piece killedPiece) {
-        if (!checkSoundMove(start, end, pawn, killedPiece))
-            return false;
 
         if (getPrevMove() != null && isEnPassant(getPrevMove(), start.getCoord(), end.getCoord(), pawn)) {
+            //check sound move
             System.out.println("You just got enpassanted cuhhhhhhh at " + end.getCoord());
             executeMove(start, end, pawn, killedPiece);
             return true;
         }
 
-        if (isValidPromotion(pawn, start, end)) { // checks if it is promotion move, 
+        if (isValidPromotion(pawn, start, end)) { // checks if it is promotion move
             /*
             TODO 
             could offer better signifers bc just executing move says a queen made promotion 
             */
-            pawn = new Queen(pawn.getColor());
-            executeMove(start, end, pawn, null);
+            executeMove(start, end, pawn, killedPiece);
+            end.setPiece(new Queen(pawn.getColor()));
             return true;
         }
 
@@ -110,6 +117,8 @@ public class Game {
                 pawn.getPiecePath(start.getCoord(), end.getCoord()), start.getCoord(), end.getCoord());
 
         if (test) {
+            if (!checkSoundMove(start, end, pawn, killedPiece))
+                return false;
             executeMove(start, end, pawn, killedPiece); // passes
             return true;
         } else {
@@ -139,13 +148,18 @@ public class Game {
     }
 
     private boolean checkEnPassantCond(Move prevMove, Piece opponentPiece, Piece pawn) { // fails if the taken piece is not a pawn, or at proper squares 
+        //sound logic --- TODO
 
+
+        ///
         return !(!isPawn(opponentPiece) || prevMove.getEndingPair().getY() != 3 || prevMove.getEndingPair().getY() != 6
                 || opponentPiece.getColor() == pawn.getColor());
 
     }
 
-    private boolean isValidPromotion(Piece pawn, Square start, Square end) { // not working for left captures
+    private boolean isValidPromotion(Piece pawn, Square start, Square end) { //need 2 check for soundness
+        if(checkSoundMove(start, end, pawn, null)) return false;
+
         Pair startXY = start.getCoord();
         Pair endXY = end.getCoord();
         if (startXY.getX() == endXY.getX() && end.hasPiece())
@@ -201,16 +215,14 @@ public class Game {
             return false;
         }
 
-        test = moveMakesCheck(start, end) && startPiece.getType() != PieceType.KING; // does the move cause the current
-                                                                                     // player to get in check
-        // buggy, checking
+        test = moveMakesCheck(start, end); //AHHHHHHHHH BUGGGINGGGGGGGGGGGGG
+                                                                                     
         if (test) {
+            System.out.println(startPiece + "made check"+start.getCoord());
             System.out.println("Cannot move " + startPiece.getReadablePiece() + " at " + start.getCoord()
                     + " as you are in check");
+
             return false;
-        } else if (moveMakesCheck(start, end)) { // not sure if best practice to have my checkout detection with this,
-                                                 // could be just a bad king move
-            over = true;
         }
 
         test = isFriendlyFire(startPiece, killedPiece);
@@ -227,9 +239,6 @@ public class Game {
         if (!kingSQ.hasPiece() || !rookSQ.hasPiece()) {
             return false;
         }
-        if (hasPieceMoved(kingSQ) || hasPieceMoved(rookSQ)) { // must have stayed in starting pos
-            return false;
-        }
 
         Piece king = kingSQ.getPiece();
         Piece rook = rookSQ.getPiece();
@@ -241,6 +250,11 @@ public class Game {
         if (!checkPiecesPath(rook.getPiecePath(rookSQ.getCoord(), kingSQ.getCoord()), rookSQ.getCoord(),
                 kingSQ.getCoord())) {
             Errors.piecesBlockingCastle();
+            return false;
+        }
+
+        if (hasPieceMoved(kingSQ) || hasPieceMoved(rookSQ)) { // must have stayed in starting pos
+            Errors.cannotCastleActivePieces();
             return false;
         }
 
@@ -258,20 +272,6 @@ public class Game {
             if (moves.getStartingPair().equals(sq.getCoord()) || moves.getEndingPair().equals(sq.getCoord())) {
                 return true;
             }
-        }
-        return false;
-    }
-
-    //
-    private boolean kingIsThreatened(Pair rookXY, Pair kingXY) {
-        int length = Math.abs(rookXY.getX() - kingXY.getX());
-        int minpos = Math.min(rookXY.getX(), kingXY.getX()); // start at leftmost pos
-
-        // see if a square on the kings horiz move can be reached
-        for (int i = 0; i < length; i++) {
-            Pair currentXY = new Pair(minpos + i, kingXY.getY());
-            if (isPieceBeingAttkd(currentXY))
-                return true;
         }
         return false;
     }
@@ -296,35 +296,55 @@ public class Game {
             addMove(rookSQ, board.getBoard()[7][5], rook, null);
         }
         System.out.println(king.getColor() + " castled!");
+        /*
+        execute move twice instead of adding two moves for each case
+        */
         this.current += 2;
         switchCurrentPlayer();
+    }
+
+    //
+    private boolean kingIsThreatened(Pair rookXY, Pair kingXY) {
+        int length = Math.abs(rookXY.getX() - kingXY.getX());
+        int minpos = Math.min(rookXY.getX(), kingXY.getX()); // start at leftmost pos
+
+        // see if a square on the kings horiz move can be reached
+        for (int i = 0; i < length; i++) {
+            Pair currentXY = new Pair(minpos + i, kingXY.getY());
+            if (isPieceBeingAttkd(currentXY))
+                return true;
+        }
+        return false;
     }
 
     private void executeMove(Square start, Square end, Piece startPiece, Piece killedPiece) {
         addMove(start, end, startPiece, killedPiece);
         switchCurrentPlayer();
         current++;
-        // showScore();
     }
 
     private void addMove(Square start, Square end, Piece startPiece, Piece killedPiece) {
         if (killedPiece != null) { // if the subsequent move has captured a piece
             checkIfKing(killedPiece); // refactor both into better and more useful methods
-
         }
         previousMoves.add(new Move(start, end, startPiece, killedPiece)); // killedPiece could be null,
     }
-
+    
+    //Scans the current move to see it implicates check
     private boolean moveMakesCheck(Square start, Square end) {
         Piece temp = end.getPiece();
         end.setPiece(start.getPiece());
         start.killPiece();
+
         boolean causedCheck = false;
+
         Pair kingXY = getKingPos(board.getBoard());
 
         if (isPieceBeingAttkd(kingXY)) {
             causedCheck = true;
+            System.out.println(end.getPiece().getColor() + " is in check");
         }
+
         start.setPiece(end.getPiece()); // reset it back into place
         end.setPiece(temp);
 
@@ -336,25 +356,29 @@ public class Game {
         for (int rank = 0; rank < bd.length; rank++) {
             for (int file = 0; file < bd[rank].length; file++) {
                 Piece temp = bd[rank][file].getPiece();
-                if (temp != null && temp.getColor() == currentplayer && temp.getType() == PieceType.KING) {
+                if (temp != null && isOwnedPiece(temp) && temp.getType() == PieceType.KING) {
                     return bd[rank][file].getCoord();
                 }
             }
         }
         return null;
     }
-
-    private boolean isPieceBeingAttkd(Pair endXY) {
+    
+    //logi error 
+    /*
+    param will usually be the Kings position on the board
+    */
+    private boolean isPieceBeingAttkd(Pair endXY) { 
         Square[][] bd = board.getBoard();
         for (int rank = 0; rank < bd.length; rank++) {
             for (int file = 0; file < bd.length; file++) {
+
                 Square sq = bd[rank][file];
-                if (sq.hasPiece()) {
-                    Piece pieceHere = sq.getPiece();
-                    Pair startXY = sq.getCoord();
-                    if (pieceHasValidRoute(pieceHere, startXY, endXY))
+                Piece pieceHere = sq.getPiece();
+                if (sq.hasPiece()
+                    && pieceHasValidPath(pieceHere, sq.getCoord(), endXY)) 
                         return true;
-                }
+                
             }
         }
         return false;
@@ -364,15 +388,51 @@ public class Game {
      * will return false, when it is an owned piece, the attacking move is invalid,
      * and when there are obstructions in the then validated path
      */
-    private boolean pieceHasValidRoute(Piece startPiece, Pair startXY, Pair kingXY) {
+    private boolean pieceHasValidPath(Piece startPiece, Pair startXY, Pair endXY) { 
 
-        return !isOwnedPiece(startPiece) && startPiece.validOrNah(startXY, kingXY)
-                && checkPiecesPath(startPiece.getPiecePath(startXY, kingXY), startXY, kingXY);
+        //Special case for pawns because its moves validity depends if there is a vacancy at end square
+        if(startPiece instanceof Pawn){
+            Pawn pPawn = (Pawn) startPiece;
+            return !isOwnedPiece(startPiece) && pPawn.validOrNah(startXY, endXY, new King(currentplayer)) 
+                    && checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
+        }
+        //We make sure its not a friendly piece attacking first
+        //Then check if it is a feasible path within the pieces ruleset
+        //Finally see if the path has pieces blocking it
+                    
+        return !isOwnedPiece(startPiece) && startPiece.validOrNah(startXY, endXY)
+                && checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
 
     }
 
-    private boolean isOwnedPiece(Piece startPiece) {
-        return startPiece.getColor() == this.currentplayer;
+    private boolean checkPiecesPath(List<Pair> path, Pair startXY, Pair endXY) { //checking discovered checks is causing error message to be raised even if done implicitly
+        Square[][] bd = board.getBoard();
+        Piece startPiece = bd[startXY.getY()][startXY.getX()].getPiece();
+        boolean flag = true;
+
+        //iterate thru list of pair values taken by Pieces path to end goal
+        for (Pair pair : path) {
+            if (squareIsOccupied(bd, pair, startXY, endXY)) {
+                flag = false;
+                Errors.pathIsBlocked(startPiece, bd[pair.getY()][pair.getX()].getPiece(), pair);
+                break;
+            }
+        }
+
+        return flag;
+    }
+
+    private boolean squareIsOccupied(Square[][] bd, Pair pair, Pair startXY, Pair endXY) {
+        // Ignore the start and ending position of the path - irrelevant to the 
+        //validity of the path
+
+        return bd[pair.getY()][pair.getX()].hasPiece() && 
+                (!pair.equals(startXY)) && (!pair.equals(endXY));
+
+    }
+
+    private boolean isOwnedPiece(Piece thispiece) {
+        return thispiece.getColor() == this.currentplayer;
     }
 
     private boolean isFriendlyFire(Piece startPiece, Piece killedPiece) {
@@ -383,29 +443,6 @@ public class Game {
 
     private boolean inBounds(int x, int y) {
         return x >= 0 && x < 8 && y >= 0 && y < 8;
-    }
-
-    private boolean checkPiecesPath(List<Pair> path, Pair startXY, Pair endXY) {
-        Square[][] bd = board.getBoard();
-        Piece startPiece = bd[startXY.getY()][startXY.getX()].getPiece();
-
-        for (Pair pair : path) {
-            if (squareIsOccupied(bd, pair, startXY, endXY)) {
-                Errors.pathIsBlocked(startPiece, bd[pair.getY()][pair.getX()].getPiece(), pair);
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private boolean squareIsOccupied(Square[][] bd, Pair pair, Pair startXY, Pair endXY) {
-        // Ignore the start and ending position of the path - irrelevant to the validity
-        // of the path
-
-        return bd[pair.getY()][pair.getX()].hasPiece() && 
-                !pair.equals(startXY) && !pair.equals(endXY);
-
     }
 
     private void switchCurrentPlayer() {

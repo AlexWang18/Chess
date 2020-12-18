@@ -5,8 +5,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 import org.junit.BeforeClass;
@@ -21,32 +29,31 @@ import domain.UserInterface.*;
 /**
  * Uses System Rules dependency
  */
-public class AppTest
-{
+public class AppTest {
     private static Game g;
     private static UI input;
-    
+
     /**
      * Rigorous Test :-)
      */
     @Rule
-    //public final TextFromStandardInputStream systemInMock = emptyStandardInputStream();
+    // public final TextFromStandardInputStream systemInMock =
+    // emptyStandardInputStream();
     @BeforeClass
-    public static void setUp(){
+    public static void setUp() {
         g = Game.getGame();
-        
+
     }
-    
+
     private TextFromStandardInputStream emptyStandardInputStream() {
         return null;
     }
 
     @Test
-    public void shouldTakeUserInput(){
+    public void shouldTakeUserInput() throws FileNotFoundException {
+        input = new UI(g, new FileReader(new File("text.txt")));
+        String expectedOutput = "array";
         
-        InputStream in = new ByteArrayInputStream("h7, h5".getBytes());
-        input = new UI(g, new Scanner(in));
-        assertEquals("h7, h5", in);
     }
     @Test
     public void getTurn(){
@@ -58,17 +65,5 @@ public class AppTest
         assertThat(g.getMoves().isEmpty());
     } */
 
-    @Test
-    public void testMoves(){
-        assertFalse(g.validMove(7, 7, 5, 7)); //jumping
-
-        assertFalse(g.validMove(1, 1, 3, 1)); //wrong turn
-
-        assertTrue(g.validMove(6,6, 4,6));
-    }
-    public void testGameOver(){
-        assertTrue(g.notDone());
-        g.over = true;
-        assertFalse(g.notDone());
-    }
+    
 }

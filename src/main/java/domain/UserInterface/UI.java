@@ -1,9 +1,9 @@
 package domain.UserInterface;
 
-
-
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
+
 import java.util.InputMismatchException;
 
 import domain.Logic.Errors;
@@ -12,20 +12,29 @@ import domain.Logic.Pair;
 import domain.Pieces.Visitor;
 
 public class UI {
+
     private Game game;
-    // private Scanner sc;
-    private BufferedReader sc;
+    
+    private Reader r;
     // private Visitor<> visitor;
 
-    public UI(Game game, BufferedReader in) {
+    public UI(Game game, Reader r) throws IOException {
         this.game = game;
-        this.sc = in;
+        this.r = r;
+        showGreeting();
+        initGame();
+        if(r instanceof BufferedReader){
+            BufferedReader br = (BufferedReader) r;
+            getMoves(br);
+        }
     }
 
     public void showGreeting() {
         System.out.println("Welcome to chess! \nLowercase letters is black, and uppercase is white. \nLet's begin");
-        game.startGame();
+    }
 
+    public void initGame(){
+        game.startGame();
     }
 
     private void gameIsOver() {
@@ -37,13 +46,13 @@ public class UI {
     }
 
     //Prompting for user input until game is over
-    public void getMoves() throws IOException {
+    public void getMoves(BufferedReader br) throws IOException {
         while (!game.isCheckMate()) {
             try {
                 System.out.print(game.getTurn() + " to move, ");
 
                 System.out.println("enter the square you wish to move from.");
-                String input1 = sc.readLine();
+                String input1 = br.readLine();
 
                 if(!isInputValid(input1))
                     continue;
@@ -59,7 +68,7 @@ public class UI {
                 int startrank = startingPair.getY();
 
                 System.out.println("Enter the square you wish to move to.");
-                String input2 = sc.readLine();
+                String input2 = br.readLine();
 
                 if (!isInputValid(input2))
                     continue;

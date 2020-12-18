@@ -26,13 +26,13 @@ public class Square { // holds coordinates and current piece at that square if a
         this.piece = piece;
     }
 
+    public Piece getPiece() {
+        return this.piece;
+    }
+
     public void killPiece(){
         this.piece = null;
        // this.piece.setType(PieceType.CAPTURED);
-    }
-
-    public Piece getPiece() {
-        return this.piece;
     }
 
     public Pair getCoord(){
