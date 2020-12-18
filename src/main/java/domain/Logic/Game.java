@@ -11,6 +11,8 @@ enpassant logic bug
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
 import domain.Logic.Color.ColorType;
 import domain.Pieces.King;
 import domain.Pieces.Pawn;
@@ -115,7 +117,7 @@ public class Game {
         
         Pawn pPawn = (Pawn) pawn;
         boolean test = pPawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece) && checkPiecesPath(
-                pawn.getPiecePath(start.getCoord(), end.getCoord()), start.getCoord(), end.getCoord());
+                pawn.getPiecePath(start.getCoord(), end.getCoord()), start.getCoord(), end.getCoord()).value;
 
         if (test) {
             executeMove(start, end, pawn, killedPiece); // passes
@@ -172,7 +174,6 @@ public class Game {
 
 
     private boolean isValidPromotion(Piece pawn, Square start, Square end) { //need 2 check for soundness
-        if(checkSoundMove(start, end, pawn, null)) return false;
 
         Pair startXY = start.getCoord();
         Pair endXY = end.getCoord();
@@ -197,14 +198,17 @@ public class Game {
     private boolean checkStandardMove(Square start, Square end, Piece startPiece, Piece killedPiece) {
         boolean testValidMove = !isPawn(startPiece) 
                                         && startPiece.validOrNah(start.getCoord(), end.getCoord());
+                                        
+        //Message holds data about the legality of move
+        Message im = checkPiecesPath(startPiece.getPiecePath(start.getCoord(), end.getCoord()),
+                        start.getCoord(), end.getCoord());
 
-        boolean testPath = checkPiecesPath(startPiece.getPiecePath(start.getCoord(), end.getCoord()),
-                start.getCoord(), end.getCoord());
+        boolean testPath = im.value;
 
         if (testValidMove && testPath) {
             executeMove(start, end, startPiece, killedPiece);
         } else if (!testPath) {
-            // raise cannot hop over piece at xy
+            Errors.pathIsBlocked(im);
             return false;
         } else {
             Errors.pieceBreakRules(start, startPiece);
@@ -261,7 +265,7 @@ public class Game {
         }
 
         if (!checkPiecesPath(rook.getPiecePath(rookSQ.getCoord(), kingSQ.getCoord()), rookSQ.getCoord(),
-                kingSQ.getCoord())) {
+                kingSQ.getCoord()).value) {
             Errors.piecesBlockingCastle();
             return false;
         }
@@ -271,11 +275,28 @@ public class Game {
             return false;
         }
 
-        if (kingIsThreatened(rookSQ.getCoord(), kingSQ.getCoord())) {
+        if (kingIsThreatened(rookSQ.getCoord(), kingSQ.getCoord())) { //cannot move through an enemy threatened square
             return false;
         }
 
         return king.getType() == PieceType.KING && rook.getType() == PieceType.ROOK;
+    }
+
+    private boolean kingIsThreatened(Pair rookXY, Pair kingXY) {
+        int length = Math.abs(rookXY.getX() - kingXY.getX());
+        
+        // see if a square on the kings horiz move can be reached
+        for (int i = 0; i < length; i++) {
+            Pair currentXY = new Pair(kingXY.getX() + i, kingXY.getY());
+            ImmutablePair<Pair,Boolean> ip = isPieceBeingAttkd(currentXY);
+
+            if (Boolean.TRUE.equals(ip.right)){
+                Errors.castleIsThreatened(ip.left);
+                return true;
+            }
+                
+        }
+        return false;
     }
 
     // check if the square matches any squares in the move list already
@@ -316,21 +337,6 @@ public class Game {
         switchCurrentPlayer();
     }
 
-    //
-    private boolean kingIsThreatened(Pair rookXY, Pair kingXY) {
-        int length = Math.abs(rookXY.getX() - kingXY.getX());
-        
-
-        // see if a square on the kings horiz move can be reached
-        for (int i = 0; i < length; i++) {
-            Pair currentXY = new Pair(kingXY.getX() + i, kingXY.getY());
-            System.out.println("king pos currently is "+ currentXY);
-            if (isPieceBeingAttkd(currentXY))
-                return true;
-        }
-        return false;
-    }
-
     private void executeMove(Square start, Square end, Piece startPiece, Piece killedPiece) {
         addMove(start, end, startPiece, killedPiece);
         switchCurrentPlayer();
@@ -344,7 +350,7 @@ public class Game {
         previousMoves.add(new Move(start, end, startPiece, killedPiece)); // killedPiece could be null,
     }
     
-    //Scans the current move to see it implicates check
+    //Scans the current move to see it implicates check.. 
     private boolean moveMakesCheck(Square start, Square end) {
         Piece temp = end.getPiece();
         end.setPiece(start.getPiece());
@@ -353,10 +359,12 @@ public class Game {
         boolean causedCheck = false;
 
         Pair kingXY = getKingPos(board.getBoard()); /*returning null when King is the piece moving and attacking pieces cannot have a valid path to a null end pair*/
-
-        if (isPieceBeingAttkd(kingXY)) {
+        System.out.println(kingXY);
+        
+        ImmutablePair<Pair,Boolean> ip = isPieceBeingAttkd(kingXY);
+        if (Boolean.TRUE.equals(ip.right)) {
             causedCheck = true;
-            System.out.println(end.getPiece().getColor() + " is in check");
+            System.out.println(end.getPiece().getColor() + " is in check at "+ ip.left);
         }
 
         start.setPiece(end.getPiece()); // reset it back into place
@@ -381,7 +389,7 @@ public class Game {
     /*
     param will usually be the Kings position on the board
     */
-    private boolean isPieceBeingAttkd(Pair endXY) { 
+    private ImmutablePair<Pair,Boolean> isPieceBeingAttkd(Pair endXY) { //return a tuple to store the pair where error message should point
         Square[][] bd = board.getBoard();
         for (int rank = 0; rank < bd.length; rank++) {
             for (int file = 0; file < bd.length; file++) {
@@ -390,12 +398,12 @@ public class Game {
                 Piece pieceHere = sq.getPiece();
 
                 if (sq.hasPiece()
-                    && pieceHasValidPath(pieceHere, sq.getCoord(), endXY)) 
-                        return true;
+                    && pieceHasValidPath(pieceHere, sq.getCoord(), endXY)) {
+                        return new ImmutablePair<Pair,Boolean>(endXY,true);}
                 
             }
         }
-        return false;
+        return new ImmutablePair<Pair,Boolean>(endXY, false);
     }
 
     /*
@@ -407,31 +415,33 @@ public class Game {
         if(startPiece instanceof Pawn){
             Pawn pPawn = (Pawn) startPiece;
             return !isOwnedPiece(startPiece) && pPawn.validOrNah(startXY, endXY, new King(currentplayer)) 
-                    && checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
+                    && checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY).value;
         }
+
         //We make sure its not a friendly piece attacking first
         //Then check if it is a feasible path within the pieces ruleset
         //Finally see if the path has pieces blocking it
                     
         return !isOwnedPiece(startPiece) && startPiece.validOrNah(startXY, endXY)
-                && checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY);
+                && checkPiecesPath(startPiece.getPiecePath(startXY, endXY), startXY, endXY).value;
 
     }
 
-    private boolean checkPiecesPath(List<Pair> path, Pair startXY, Pair endXY) { //checking discovered checks is causing error message to be raised even if done implicitly
+    private Message checkPiecesPath(List<Pair> path, Pair startXY, Pair endXY) { //checking discovered checks is causing error message to be raised even if done implicitly
         Square[][] bd = board.getBoard();
         Piece startPiece = bd[startXY.getY()][startXY.getX()].getPiece();
-        boolean flag = true;
-
+        Message flag = new Message(startPiece, null, null, true);
+        
         //iterate thru list of pair values taken by Pieces path to end goal
         for (Pair pair : path) {
             if (squareIsOccupied(bd, pair, startXY, endXY)) {
-                flag = false;
-                Errors.pathIsBlocked(startPiece, bd[pair.getY()][pair.getX()].getPiece(), pair);
+                flag = new Message(startPiece, bd[pair.getY()][pair.getX()].getPiece(), pair, false);
+                //*******Errors.pathIsBlocked(startPiece, bd[pair.getY()][pair.getX()].getPiece(), pair);      
+       
                 break;
             }
         }
-
+        
         return flag;
     }
 
@@ -534,5 +544,15 @@ public class Game {
      * score = 39 - p.stream().mapToInt(Piece::getValue).sum();
      * System.out.println("'s score: " + score); } } to do ---- has logic errors
      */
+        public class Tuple2<K,V>{
 
+            private final K e1;
+
+            private final V e2;
+            
+            public Tuple2(K ele1, V ele2){
+                this.e1 = ele1;
+                this.e2 = ele2;
+            }
+        }
 }

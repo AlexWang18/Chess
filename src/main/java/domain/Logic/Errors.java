@@ -5,7 +5,6 @@ package domain.Logic;
 import domain.Pieces.*;
 
 public class Errors {
-
     private Errors(){
         throw new IllegalStateException("Silly goose");
     }
@@ -27,7 +26,10 @@ public class Errors {
         System.out.println("Move did not follow through, try again..");
     } 
 
-    public static void pathIsBlocked(Piece startPiece, Piece blockingPiece, Pair atHere){
+    public static void pathIsBlocked(Message m){
+        Piece startPiece = m.startPiece;
+        Piece blockingPiece = m.blockPiece;
+        Pair atHere = m.whereXY;
         StringBuilder sb = new StringBuilder(startPiece.getReadablePiece() + " cannot hop over the "
         + blockingPiece.getReadablePiece() + " at " + atHere);
         System.out.println(sb.toString());
@@ -37,12 +39,27 @@ public class Errors {
         System.out.println("You need to move your other pieces out of the way before castling!");
     }
 
-    public static void castleIsThreatened(){
-        System.out.println("You cannot castle as your King will be threatend in the process at ");
+    public static void castleIsThreatened(Pair xy){
+        System.out.println("You cannot castle as your King will be threatend in the process at " + xy);
     }
 
     public static void cannotCastleActivePieces(){
         System.out.println("You have moved your king or rook already... cannot castle");
     }
+}
+class Message{  //would not work as an inner class as i cant make an instance of the Errors util class
+    protected Piece startPiece;
+    protected Piece blockPiece;
+    protected Pair whereXY;
+    protected boolean value;
 
+    public Message(Piece startPiece, Piece blockPiece, Pair whereXY, boolean value){
+        this.startPiece = startPiece;
+        this.blockPiece = blockPiece;
+        this.whereXY = whereXY;
+        this.value = value;
+    }
+    public boolean getBool(){
+        return this.value;
+    }
 }
