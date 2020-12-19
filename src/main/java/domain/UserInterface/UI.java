@@ -3,7 +3,6 @@ package domain.UserInterface;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-
 import java.util.InputMismatchException;
 
 import domain.Logic.Errors;
@@ -11,30 +10,38 @@ import domain.Logic.Game;
 import domain.Logic.Pair;
 import domain.Pieces.Visitor;
 
-public class UI {
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
+public class UI implements Runnable {
 
     private Game game;
-    
-    private Reader r;
+    private static final String ENDCASE = "^(?i)(exit|stop)$"; //embedded flag ? specifies case insensitive
+    private Reader read;
     // private Visitor<> visitor;
 
-    public UI(Game game, Reader r) throws IOException {
-        this.game = game;
-        this.r = r;
+    public UI(Game g, Reader r) throws IOException {
+        this.game = g;
+        this.read = r;
+        
         showGreeting();
-        initGame();
-        if(r instanceof BufferedReader){
-            BufferedReader br = (BufferedReader) r;
-            getMoves(br);
+    }
+
+    @Override
+    public void run() {
+        if(this.read instanceof BufferedReader){ //testing if we are doing user input
+            BufferedReader br = (BufferedReader) read;
+            try {
+                getMoves(br);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        else System.err.println("testing");
     }
 
     public void showGreeting() {
-        System.out.println("Welcome to chess! \nLowercase letters is black, and uppercase is white. \nLet's begin");
-    }
-
-    public void initGame(){
-        game.startGame();
+        System.out.println("Welcome to "+ Thread.currentThread().getName()+"! \nLowercase letters is black, and uppercase is white. \nLet's begin");
+        game.printBoard();
     }
 
     private void gameIsOver() {
@@ -42,7 +49,10 @@ public class UI {
     }
 
     private boolean isInputValid(String input) {
-        return !(input.isBlank() || input.length() < 2);
+        if(input.matches(ENDCASE)) 
+            System.exit(0);
+
+        return !(input.isBlank() || (input.length() > 2));
     }
 
     //Prompting for user input until game is over

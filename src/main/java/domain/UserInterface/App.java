@@ -16,14 +16,15 @@ public class App {
 
     public static void main(String... strings) throws IOException
     {
+        
+        
+        Runnable ui = new UI(Game.getGame(), new BufferedReader(new InputStreamReader(System.in)));
+        Thread t1 = new Thread(ui, "Chess");
+
         long startTime = System.nanoTime();
 
-        Game game = Game.getGame();
-        
-        UI ui = new UI(game, new BufferedReader(new InputStreamReader(System.in)));
-        ui.showGreeting();
-        ui.initGame();
-        //ui.getMoves();
+        t1.start();
+        while(t1.isAlive()); //to avoid concurrency issues
 
         long endTime = System.nanoTime();
 

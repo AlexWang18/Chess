@@ -20,7 +20,7 @@ import domain.Pieces.Piece;
 import domain.Pieces.PieceType;
 import domain.Pieces.Queen;
 
-public class Game {
+public class Game{
 
     private Board board;
 
@@ -43,10 +43,6 @@ public class Game {
 
     public static Game getGame() { // Implementation of Singleton Pattern, Only one game will occur at a time
         return g;
-    }
-
-    public void startGame() {
-        printBoard();
     }
 
     public boolean isCheckMate() {
@@ -198,17 +194,17 @@ public class Game {
     private boolean checkStandardMove(Square start, Square end, Piece startPiece, Piece killedPiece) {
         boolean testValidMove = !isPawn(startPiece) 
                                         && startPiece.validOrNah(start.getCoord(), end.getCoord());
-                                        
+
         //Message holds data about the legality of move
-        Message im = checkPiecesPath(startPiece.getPiecePath(start.getCoord(), end.getCoord()),
+        Message moveData = checkPiecesPath(startPiece.getPiecePath(start.getCoord(), end.getCoord()),
                         start.getCoord(), end.getCoord());
 
-        boolean testPath = im.value;
+        boolean testPath = moveData.value;
 
         if (testValidMove && testPath) {
             executeMove(start, end, startPiece, killedPiece);
         } else if (!testPath) {
-            Errors.pathIsBlocked(im);
+            Errors.pathIsBlocked(moveData);
             return false;
         } else {
             Errors.pieceBreakRules(start, startPiece);
