@@ -2,7 +2,7 @@ package domain.Pieces;
 
 public enum PieceType {
 
-    CAPTURED(0),
+    CAPTURED(0), 
     PAWN(1), 
     BISHOP(3), 
     KNIGHT(3), 

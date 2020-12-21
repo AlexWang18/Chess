@@ -20,7 +20,11 @@ public class UI implements Runnable {
 
     private Reader read;
 
+    private static BufferedReader br;
     // private Visitor<> visitor;
+
+    // we accept a implementation of the Reader interface as a parameter to
+    // also pass different forms of readers for testing, e.g. fileReader
 
     public UI(Game g, Reader r) throws IOException {
         this.game = g;
@@ -30,15 +34,16 @@ public class UI implements Runnable {
     @Override
     public void run() {
         showGreeting();
-        if(this.read instanceof BufferedReader){ //testing if we are doing user input
-            BufferedReader br = (BufferedReader) read;
+
+        if (this.read instanceof BufferedReader) { // testing if we are doing user input
+            br = (BufferedReader) read;
             try {
-                getMoves(br);
+                getMoves();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else System.err.println("testing");
+        } else
+            System.err.println("testing");
     }
 
     public void showGreeting() {
@@ -56,30 +61,32 @@ public class UI implements Runnable {
 
     }
 
-    public boolean userEndCase(String... inputs){
+    public boolean userEndCase(String... inputs) {
         for (String str : inputs) {
-            if(str.matches(ENDCASE)) return true;
+            if (str.matches(ENDCASE))
+                return true;
         }
         return false;
     }
 
-    //Prompting for user input until game is over
-    public void getMoves(BufferedReader br) throws IOException {
-        String input1 = "", input2 = "";
-       
-        while (!game.isGameOver() && !userEndCase(input1, input2)) { //not working
+    // Prompting for user input until game is over
+    public void getMoves() throws IOException {
+        String input1 = "";
+        String input2 = "";
+
+        while (!game.isGameOver() && !userEndCase(input1, input2)) { // not working
             try {
                 System.out.print(game.getTurn() + " to move, ");
 
                 System.out.println("enter the square you wish to move from.");
                 input1 = br.readLine();
 
-                if(!isInputValid(input1))
+                if (!isInputValid(input1))
                     continue;
 
                 Pair startingPair = getPair(input1.toLowerCase());
 
-                if(!checkPair(startingPair)){
+                if (!checkPair(startingPair)) {
                     System.out.println("Invalid square to move to at " + startingPair + " retry!");
                     continue;
                 }
@@ -105,20 +112,35 @@ public class UI implements Runnable {
 
                 if (!game.tryMove(startfile, startrank, endfile, endrank))
                     Errors.moveException();
-                else{
-                    assert true; //move went thru, 
+                else {
+                    assert true; // move went thru,
                     System.out.println(game.getPrevMove());
                 }
 
             } catch (InputMismatchException exception) {
                 System.out.println("Error occured in scanning users input   ");
             }
-            finally{
+
+            finally { // will print the board again after each attempt
                 game.printBoard();
             }
         }
         game.getMoves();
         gameIsOver();
+    }
+
+    public static String parsePieceChoice(String xy) throws IOException {
+        System.out.println("You can promote your pawn at " + xy + "Enter your selection");
+        String pChoice = "";
+        try {
+            pChoice = br.readLine();
+        }
+        catch(InputMismatchException e){
+            Errors.inputError();
+            parsePieceChoice(xy); //try again
+        }
+        
+        return pChoice.toLowerCase();
     }
 
     private boolean checkPair(Pair p) {
@@ -128,6 +150,8 @@ public class UI implements Runnable {
     private Pair getPair(String input){
         return new Pair(input);
     }
+
+
 }
  /*
      * private void setMode(){

@@ -1,8 +1,10 @@
 package domain.Logic;
 
+import java.io.IOException;
+
 /*
 CRUD CLI Chess game
-*** TODO implemenet checkmate detection to automatically end game
+TODO Promotion 
 
 enpassant logic bug
 
@@ -15,13 +17,17 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import domain.Logic.Color.ColorType;
+import domain.Pieces.Bishop;
 import domain.Pieces.King;
+import domain.Pieces.Knight;
 import domain.Pieces.Pawn;
 import domain.Pieces.Piece;
 import domain.Pieces.PieceType;
 import domain.Pieces.Queen;
+import domain.Pieces.Rook;
+import domain.UserInterface.UI;
 
-public class Game{
+public class Game {
 
     private Board board;
 
@@ -50,13 +56,15 @@ public class Game{
         return over;
     }
 
-    // Starting point of each attemped move, returns true only if the move was valid and executed
+    // Starting point of each attemped move, returns true only if the move was valid
+    // and executed
     /*
-    * param: numerical coordinates indicating the location of a move on the Board's 2D array
-    *
-    *
-    */
-    public boolean tryMove(int startx, int starty, int endx, int endy) {
+     * param: numerical coordinates indicating the location of a move on the Board's
+     * 2D array
+     *
+     *
+     */
+    public boolean tryMove(int startx, int starty, int endx, int endy) throws IOException {
 
         if (!inBounds(startx, starty) || !inBounds(endx, endy))
             return false;
@@ -74,16 +82,20 @@ public class Game{
             return false;
         }
 
-         // Special case for pawns, method handles enpasssant, promotion and regular moves
+        // Special case for pawns, method handles enpasssant, promotion and regular
+        // moves
         if (isPawn(startPiece)) {
             return checkPawnMove(start, end, startPiece, killedPiece);
         }
-        
-        if (startPiece.getColor() == killedPiece.getColor() && checkValidCastling(start, end)) {
+
+        // If they opt to castle, they enter the King and Rooks squares
+        if (killedPiece != null && startPiece.getColor() == killedPiece.getColor() && checkValidCastling(start, end)) {
+
             castlePieces(start, end);
             return true;
+
         }
-        
+
         else if (checkSoundMove(start, end, startPiece, killedPiece)) {
             return checkStandardMove(start, end, startPiece, killedPiece);
         }
@@ -91,30 +103,33 @@ public class Game{
         return false;
     }
 
-    private boolean checkPawnMove(Square start, Square end, Piece pawn, Piece killedPiece) {
+    private boolean checkPawnMove(Square start, Square end, Piece pawn, Piece killedPiece) throws IOException {
 
         if (!checkSoundMove(start, end, pawn, killedPiece))
-                return false;
-    
+            return false;
+
         if (getPrevMove() != null && isEnPassant(getPrevMove(), start.getCoord(), end.getCoord(), pawn)) {
             executeEnPassant(start, end, pawn);
             return true;
         }
 
-        if (isValidPromotion(pawn, start, end)) { // checks if it is promotion move
+        if (isValidPromotion(pawn, start, end)) {
+            // how do i get the users response after reaching end of board, should i have a
+            // two way relationship b/tw UI and Game or keep it has a unidirectional
             /*
             
-            could offer better signifers bc just executing move says a queen made promotion 
+            
             */
             executeMove(start, end, pawn, killedPiece);
-            end.setPiece(new Queen(pawn.getColor()));
-            return true;
+            return promote(pawn.getColor(), end, start.getCoord());
         }
-        //maybe put valid pawn capture here if keep getting issues in Pawn valid or nah method
-        
+        // maybe put valid pawn capture here if keep getting issues in Pawn valid or nah
+        // method
+
         Pawn pPawn = (Pawn) pawn;
-        boolean test = pPawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece) && checkPiecesPath(
-                pawn.getPiecePath(start.getCoord(), end.getCoord()), start.getCoord(), end.getCoord()).value;
+        boolean test = pPawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece)
+                && checkPiecesPath(pawn.getPiecePath(start.getCoord(), end.getCoord()), start.getCoord(),
+                        end.getCoord()).value;
 
         if (test) {
             executeMove(start, end, pawn, killedPiece); // passes
@@ -123,7 +138,41 @@ public class Game{
             System.out.println("Illegal pawn manuever at " + start.getCoord());
             return false;
         }
+
+    }
+
+    private boolean promote(ColorType color, Square end, Pair readableXY) throws IOException {
+
+        String pChoice = UI.parsePieceChoice(readableXY.toString()); //idk abt this static method and this implementation in general
+
+        String bishopRegex = "^b(ishop)?$";
+        String knightRegex = "^k(night)?$";
+        String rookRegex = "^r(ook)?$";
+        String queenRegex = "^q(ueen)?$";
+
+        //could use Switch on a boolean, but opted for ifs for readability
         
+        if (pChoice.matches(bishopRegex)) {
+
+            end.setPiece(new Bishop(color));
+
+        } else if (pChoice.matches(knightRegex)) {
+
+            end.setPiece(new Knight(color));
+
+        } else if (pChoice.matches(rookRegex)) {
+
+            end.setPiece(new Rook(color));
+
+        } else if (pChoice.matches(queenRegex)) {
+
+            end.setPiece(new Queen(color));
+
+        } else {
+            return false;
+        }
+
+        return true;
     }
 
     private boolean isEnPassant(Move prevMove, Pair start, Pair end, Piece pawn) {
@@ -149,13 +198,14 @@ public class Game{
     }
 
     private boolean checkEnPassantCond(Move prevMove, Piece opponentPiece, Piece pawn) { 
-        //has to be a 2 square pawn move
-
+        //has to be a 2 square pawn move, 3 and 6 are the files on each side respectively
+        int blackDoubleJumpPos = 3;
+        int whiteDoubleJumpPos = 6;
         if(Math.abs(prevMove.getEndingPair().getY() - prevMove.getStartingPair().getY()) != 2) return false; 
         
         // fails if the taken piece is not a pawn, or at the proper squares 
 
-        return !(!isPawn(opponentPiece) || prevMove.getEndingPair().getY() != 3 || prevMove.getEndingPair().getY() != 6
+        return !(!isPawn(opponentPiece) || prevMove.getEndingPair().getY() != blackDoubleJumpPos || prevMove.getEndingPair().getY() != whiteDoubleJumpPos
                 || opponentPiece.getColor() == pawn.getColor());
 
     }
@@ -253,20 +303,34 @@ public class Game{
         return true;
     }
 
+    //
     private boolean checkValidCastling(Square kingSQ, Square rookSQ) {
         if (!kingSQ.hasPiece() || !rookSQ.hasPiece()) {
             return false;
         }
-
+        
         Piece king = kingSQ.getPiece();
         Piece rook = rookSQ.getPiece();
 
-        if (!rook.validOrNah(rookSQ.getCoord(), kingSQ.getCoord())) { // did the rook do a valid horizontal cross?
+        if(king.getType() == PieceType.KING){
+            assert rook.getType() == PieceType.ROOK;
+        }
+
+        else if(king.getType() == PieceType.ROOK){ //swap the references
+            Piece temp = king;
+            king = rook;
+            rook = temp;
+        }
+
+        Pair kingXY = kingSQ.getCoord();
+        Pair rookXY = rookSQ.getCoord();
+
+        if (!rook.validOrNah(rookXY, kingXY)) { // did the rook do a valid horizontal cross?
             return false;
         }
 
-        if (!checkPiecesPath(rook.getPiecePath(rookSQ.getCoord(), kingSQ.getCoord()), rookSQ.getCoord(),
-                kingSQ.getCoord()).value) {
+        if (!checkPiecesPath(rook.getPiecePath(rookXY, kingXY), rookXY,
+        kingXY).getBool()) {
             Errors.piecesBlockingCastle();
             return false;
         }
@@ -276,7 +340,7 @@ public class Game{
             return false;
         }
 
-        if (kingIsThreatened(rookSQ.getCoord(), kingSQ.getCoord())) { //cannot move through an enemy threatened square
+        if (kingIsThreatened(rookXY, kingXY)) { //cannot move through an enemy threatened square
             return false;
         }
 
@@ -345,10 +409,7 @@ public class Game{
     }
 
     private void addMove(Square start, Square end, Piece startPiece, Piece killedPiece) {
-        if (killedPiece != null) { // if the subsequent move has captured a piece
-            checkIfKing(killedPiece); // refactor both into better and more useful methods
-        }
-        previousMoves.add(new Move(start, end, startPiece, killedPiece)); // killedPiece could be null,
+        previousMoves.add(new Move(start, end, startPiece, killedPiece)); // killedPiece could be null in any instance
     }
     
     //Scans the current move to see it implicates check.. 
@@ -360,7 +421,6 @@ public class Game{
         boolean causedCheck = false;
 
         Pair kingXY = getKingPos(board.getBoard()); /*returning null when King is the piece moving and attacking pieces cannot have a valid path to a null end pair*/
-        System.out.println(kingXY);
         
         ImmutablePair<Pair,Boolean> ip = isPieceBeingAttkd(kingXY);
         if (Boolean.TRUE.equals(ip.right)) {
@@ -374,7 +434,7 @@ public class Game{
         return new ImmutablePair<Pair,Boolean>(kingXY, causedCheck);
     }
 
-    private boolean isCheckMate(Pair currentKingXY) { //change method header name{ 
+    private boolean isCheckMate(Pair currentKingXY) {
         
         int x = currentKingXY.getX(); 
         int y = currentKingXY.getY();  
@@ -403,7 +463,7 @@ public class Game{
                 possibleKingPos.add(new Pair(x+1, y-1));
             }
         }
-        
+
         if(x - 1 >= 0){ //same level
             possibleKingPos.add(new Pair(x-1,y));
         }
@@ -479,9 +539,9 @@ public class Game{
         //iterate thru list of pair values taken by Pieces path to end goal
         for (Pair pair : path) {
             if (squareIsOccupied(bd, pair, startXY, endXY)) {
+
                 flag = new Message(startPiece, bd[pair.getY()][pair.getX()].getPiece(), pair, false);
-                //*******Errors.pathIsBlocked(startPiece, bd[pair.getY()][pair.getX()].getPiece(), pair);      
-       
+                
                 break;
             }
         }
@@ -550,11 +610,6 @@ public class Game{
         return previousMoves.get(current - 1);
     }
 
-    private void checkIfKing(Piece killed) {
-        if (killed.getType() == PieceType.KING)
-            over = true;
-    }
-
     private boolean isPawn(Piece startPiece) {
         return startPiece.getType() == PieceType.PAWN;
     }
@@ -564,24 +619,18 @@ public class Game{
     }
 
     public void printBoard() {
-        // System.out.println("\t Black");
         board.showBoard();
-        // bSystem.out.println("\t White");
     }
         
-     /* private void showScore() { for (List<Piece> p : pieceskilled.values()) { int
-     * score = 39 - p.stream().mapToInt(Piece::getValue).sum();
-     * System.out.println("'s score: " + score); } } to do ---- has logic errors
-     */
-        public class Tuple2<K,V>{
+    public class Tuple2<K,V>{
 
-            private final K e1;
+        private final K e1;
 
-            private final V e2;
+        private final V e2;
             
-            public Tuple2(K ele1, V ele2){
+        public Tuple2(K ele1, V ele2){
                 this.e1 = ele1;
                 this.e2 = ele2;
-            }
         }
+    }
 }
