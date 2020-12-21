@@ -10,6 +10,7 @@ enpassant logic bug
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -45,7 +46,7 @@ public class Game{
         return g;
     }
 
-    public boolean isCheckMate() {
+    public boolean isGameOver() {
         return over;
     }
 
@@ -77,8 +78,8 @@ public class Game{
         if (isPawn(startPiece)) {
             return checkPawnMove(start, end, startPiece, killedPiece);
         }
-
-        if (checkValidCastling(start, end)) {
+        
+        if (startPiece.getColor() == killedPiece.getColor() && checkValidCastling(start, end)) {
             castlePieces(start, end);
             return true;
         }
@@ -102,7 +103,7 @@ public class Game{
 
         if (isValidPromotion(pawn, start, end)) { // checks if it is promotion move
             /*
-            TODO 
+            
             could offer better signifers bc just executing move says a queen made promotion 
             */
             executeMove(start, end, pawn, killedPiece);
@@ -229,9 +230,13 @@ public class Game{
             return false;
         }
 
-        test = moveMakesCheck(start, end); 
+        ImmutablePair<Pair, Boolean> testCheck = moveMakesCheck(start, end); 
                                                                                      
-        if (test) {
+        if (Boolean.TRUE == testCheck.right) {
+            if(isCheckMate(testCheck.left)){
+                over = true;
+                return false;
+            }
             System.out.println("Cannot move " + startPiece.getReadablePiece() + " at " + start.getCoord()
                     + " as you are in check");
 
@@ -347,7 +352,7 @@ public class Game{
     }
     
     //Scans the current move to see it implicates check.. 
-    private boolean moveMakesCheck(Square start, Square end) {
+    private ImmutablePair<Pair, Boolean> moveMakesCheck(Square start, Square end) {
         Piece temp = end.getPiece();
         end.setPiece(start.getPiece());
         start.killPiece();
@@ -366,7 +371,50 @@ public class Game{
         start.setPiece(end.getPiece()); // reset it back into place
         end.setPiece(temp);
 
-        return causedCheck;
+        return new ImmutablePair<Pair,Boolean>(kingXY, causedCheck);
+    }
+
+    private boolean isCheckMate(Pair currentKingXY) { //change method header name{ 
+        
+        int x = currentKingXY.getX(); 
+        int y = currentKingXY.getY();  
+        int GIRTH = Board.getSize();
+        
+        List<Pair> possibleKingPos = new ArrayList<>(8); 
+
+        //Adding possible moves for the passed king
+        
+        if((y + 1) < GIRTH){ //upper level
+            possibleKingPos.add(new Pair(x, y + 1));
+            if(x - 1 >= 0){
+                possibleKingPos.add(new Pair(x-1, y+1));
+            }
+            if(x + 1 < GIRTH){
+                possibleKingPos.add(new Pair(x+1, y+1));
+            }
+        }
+
+        if((y - 1) >= 0){ //lower
+            possibleKingPos.add(new Pair(x,y-1));
+            if(x - 1 >= 0){
+                possibleKingPos.add(new Pair(x-1, y-1));
+            }
+            if(x + 1 < GIRTH){
+                possibleKingPos.add(new Pair(x+1, y-1));
+            }
+        }
+        
+        if(x - 1 >= 0){ //same level
+            possibleKingPos.add(new Pair(x-1,y));
+        }
+        if(x + 1 < GIRTH){
+            possibleKingPos.add(new Pair(x+1,y));
+        }
+
+        List<? extends Pair> validKingMoves = possibleKingPos.stream().filter(p -> !isPieceBeingAttkd(p).right).collect(Collectors.toList());
+
+        //if list is empty than there is no valid place for the king to go
+        return validKingMoves.isEmpty();
     }
 
     private Pair getKingPos(Square[][] bd) {
@@ -520,23 +568,8 @@ public class Game{
         board.showBoard();
         // bSystem.out.println("\t White");
     }
-
-    /*
-     * private boolean isCheckMate(){ if(!isCheck(currentplayer)) return false;
-     * Square[][] bd = board.getBoard(); List<Pair> possibleKingPos = new
-     * ArrayList<>(8); Pair currentKingPos = getKingPos(board.getBoard(), 0, 0); int
-     * x = currentKingPos.getX(); int y = currentKingPos.getY(); //if not at end or
-     * edge of the board 8 possible moves for(int rank = 0; rank < 3; rank++){
-     * //right if(!bd[x+1][y+rank].hasPiece()) possibleKingPos.add(new Pair(x+1,
-     * y+rank));
-     * 
-     * } for(int rank = 0; rank < 3; rank++){ //left if(!bd[x-1][y+rank].hasPiece())
-     * possibleKingPos.add(new Pair(x-1, y+rank)); } for(int rank = 0; rank < 2;
-     * rank++){ //left if(!bd[x][y+rank].hasPiece()) possibleKingPos.add(new
-     * Pair(x-1, y+rank)); } return false; //get current King moves, }
-     */
-    /*
-     * private void showScore() { for (List<Piece> p : pieceskilled.values()) { int
+        
+     /* private void showScore() { for (List<Piece> p : pieceskilled.values()) { int
      * score = 39 - p.stream().mapToInt(Piece::getValue).sum();
      * System.out.println("'s score: " + score); } } to do ---- has logic errors
      */

@@ -20,7 +20,7 @@ public class Rook extends Piece {
 
     @Override
     public String toString() {
-        if(super.getColor() == ColorType.Black) return "b";
+        if(super.getColor() == ColorType.Black) return "r";
         
         return "R";
     }

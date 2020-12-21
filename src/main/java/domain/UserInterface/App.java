@@ -17,7 +17,6 @@ public class App {
     public static void main(String... strings) throws IOException
     {
         
-        
         Runnable ui = new UI(Game.getGame(), new BufferedReader(new InputStreamReader(System.in)));
         Thread t1 = new Thread(ui, "Chess");
 

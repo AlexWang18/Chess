@@ -33,6 +33,10 @@ public class Board {
         }
     }
 
+    public static int getSize(){
+        return SIZE;
+    }
+
     public void setWhitePieces(){
         for (int file = 0; file < bd.length; file++) {
             bd[6][file].setPiece(new Pawn(ColorType.White));

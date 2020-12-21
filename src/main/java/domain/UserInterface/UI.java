@@ -15,19 +15,21 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 public class UI implements Runnable {
 
     private Game game;
-    private static final String ENDCASE = "^(?i)(exit|stop)$"; //embedded flag ? specifies case insensitive
+
+    private static final String ENDCASE = "^(?i)(exit|stop)+$"; //embedded flag ? specifies case insensitive, + one or more times
+
     private Reader read;
+
     // private Visitor<> visitor;
 
     public UI(Game g, Reader r) throws IOException {
         this.game = g;
         this.read = r;
-        
-        showGreeting();
     }
 
     @Override
     public void run() {
+        showGreeting();
         if(this.read instanceof BufferedReader){ //testing if we are doing user input
             BufferedReader br = (BufferedReader) read;
             try {
@@ -40,7 +42,7 @@ public class UI implements Runnable {
     }
 
     public void showGreeting() {
-        System.out.println("Welcome to "+ Thread.currentThread().getName()+"! \nLowercase letters is black, and uppercase is white. \nLet's begin");
+        System.out.println("Welcome to CL Chess! \nLowercase letters is black, and uppercase is white. \nLet's begin");
         game.printBoard();
     }
 
@@ -49,20 +51,28 @@ public class UI implements Runnable {
     }
 
     private boolean isInputValid(String input) {
-        if(input.matches(ENDCASE)) 
-            System.exit(0);
 
         return !(input.isBlank() || (input.length() > 2));
+
+    }
+
+    public boolean userEndCase(String... inputs){
+        for (String str : inputs) {
+            if(str.matches(ENDCASE)) return true;
+        }
+        return false;
     }
 
     //Prompting for user input until game is over
     public void getMoves(BufferedReader br) throws IOException {
-        while (!game.isCheckMate()) {
+        String input1 = "", input2 = "";
+       
+        while (!game.isGameOver() && !userEndCase(input1, input2)) { //not working
             try {
                 System.out.print(game.getTurn() + " to move, ");
 
                 System.out.println("enter the square you wish to move from.");
-                String input1 = br.readLine();
+                input1 = br.readLine();
 
                 if(!isInputValid(input1))
                     continue;
@@ -78,7 +88,7 @@ public class UI implements Runnable {
                 int startrank = startingPair.getY();
 
                 System.out.println("Enter the square you wish to move to.");
-                String input2 = br.readLine();
+                input2 = br.readLine();
 
                 if (!isInputValid(input2))
                     continue;
