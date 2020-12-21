@@ -3,11 +3,13 @@ package domain.UserInterface;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 
 import domain.Logic.Errors;
 import domain.Logic.Game;
 import domain.Logic.Pair;
+import domain.Logic.Square;
 import domain.Pieces.Visitor.*;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -124,7 +126,7 @@ public class UI implements Runnable {
             }
 
             finally { // will print the board again after each attempt
-                game.printBoard();
+                showBoard();
             }
         }
 
@@ -137,6 +139,14 @@ public class UI implements Runnable {
 
         return !(input.isBlank() || (input.length() > 2));
 
+    }
+
+    private void showBoard(){
+        Square[][] bd = game.getBoard();
+        for (int i = 0; i < bd.length; i++) {
+            System.out.println((i+1) +" " +Arrays.toString(bd[i]).replaceAll("\\[|]|,", "")); //replace the Array funky business with regex
+        }
+        System.out.println("  a b c d e f g h"); 
     }
 
     public boolean userEndCase(String... inputs) {

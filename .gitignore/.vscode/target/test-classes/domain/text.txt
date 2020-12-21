@@ -1,0 +1,396 @@
+Welcome to chess! 
+Lowercase letters is black, and uppercase is white.
+Let's begin
+1 b k b q ! b k b
+2 p p p p p p p p
+3 - - - - - - - -
+4 - - - - - - - -
+5 - - - - - - - -
+6 - - - - - - - -
+7 P P P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+White to move, enter the square you wish to move from.
+a7
+Enter the square you wish to move to.
+a5
+White Pawn, a7 -> a5
+1 b k b q ! b k b
+2 p p p p p p p p
+3 - - - - - - - -
+4 - - - - - - - -
+5 P - - - - - - -
+6 - - - - - - - -
+7 - P P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+Black to move, enter the square you wish to move from.
+d2
+Enter the square you wish to move to.
+d3
+Black Pawn, d2 -> d3
+1 b k b q ! b k b
+2 p p p - p p p p
+3 - - - p - - - -
+4 - - - - - - - -
+5 P - - - - - - -
+6 - - - - - - - -
+7 - P P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+White to move, enter the square you wish to move from.
+a5
+Enter the square you wish to move to.
+a4
+White Pawn, a5 -> a4
+1 b k b q ! b k b
+2 p p p - p p p p
+3 - - - p - - - -
+4 P - - - - - - -
+5 - - - - - - - -
+6 - - - - - - - -
+7 - P P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+Black to move, enter the square you wish to move from.
+b2
+Enter the square you wish to move to.
+b4
+Black Pawn, b2 -> b4
+1 b k b q ! b k b
+2 p - p - p p p p
+3 - - - p - - - -
+4 P p - - - - - -
+5 - - - - - - - -
+6 - - - - - - - -
+7 - P P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+White to move, enter the square you wish to move from.
+a4
+Enter the square you wish to move to.
+b3
+You just got enpassanted cuhhhhhhh at b3
+p
+1 b k b q ! b k b
+2 p - p - p p p p
+3 - P - p - - - -
+4 - p - - - - - -
+5 - - - - - - - -
+6 - - - - - - - -
+7 - P P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+Black to move, enter the square you wish to move from.
+PS C:\Users\alexw\Documents\Schooool\redochess\rechess>  c:; cd 'c:\Users\alexw\Documents\Schooool\redochess\rechess'; & 'c:\Users\alexw\.vscode\extensions\vscjava.vscode-java-debug-0.30.0\scripts\launcher.bat' 'C:\Program Files\Java\jdk-15.0.1\bin\java.exe' '-agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=localhost:57148' '-XX:+ShowCodeDetailsInExceptionMessages' '-Dfile.encoding=UTF-8' '-cp' 'C:\Users\alexw\Documents\Schooool\redochess\rechess\target\classes' 'domain.UserInterface.App' 
+Welcome to chess! 
+Lowercase letters is black, and uppercase is white.
+Let's begin
+1 b k b q ! b k b
+2 p p p p p p p p
+3 - - - - - - - -
+4 - - - - - - - -
+5 - - - - - - - -
+6 - - - - - - - -
+7 P P P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+White to move, enter the square you wish to move from.
+a7
+Enter the square you wish to move to.
+a5
+White Pawn, a7 -> a5
+1 b k b q ! b k b
+2 p p p p p p p p
+3 - - - - - - - -
+4 - - - - - - - -
+5 P - - - - - - -
+6 - - - - - - - -
+7 - P P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+Black to move, enter the square you wish to move from.
+d2
+Enter the square you wish to move to.
+d4
+Black Pawn, d2 -> d4
+1 b k b q ! b k b
+2 p p p - p p p p
+3 - - - - - - - -
+4 - - - p - - - -
+5 P - - - - - - -
+6 - - - - - - - -
+7 - P P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+White to move, enter the square you wish to move from.
+a5
+Enter the square you wish to move to.
+a4
+White Pawn, a5 -> a4
+1 b k b q ! b k b
+2 p p p - p p p p
+3 - - - - - - - -
+4 P - - p - - - -
+5 - - - - - - - -
+6 - - - - - - - -
+7 - P P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+Black to move, enter the square you wish to move from.
+b2
+Enter the square you wish to move to.
+b4
+Black Pawn, b2 -> b4
+1 b k b q ! b k b
+2 p - p - p p p p
+3 - - - - - - - -
+4 P p - p - - - -
+5 - - - - - - - -
+6 - - - - - - - -
+7 - P P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+White to move, enter the square you wish to move from.
+a4
+Enter the square you wish to move to.
+b3
+You just got enpassanted cuhhhhhhh at b3
+1 b k b q ! b k b
+2 p - p - p p p p
+3 - P - - - - - -
+4 - - - p - - - -
+5 - - - - - - - -
+6 - - - - - - - -
+7 - P P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+Black to move, enter the square you wish to move from.
+PS C:\Users\alexw\Documents\Schooool\redochess\rechess>  c:; cd 'c:\Users\alexw\Documents\Schooool\redochess\rechess'; & 'c:\Users\alexw\.vscode\extensions\vscjava.vscode-java-debug-0.30.0\scripts\launcher.bat' 'C:\Program Files\Java\jdk-15.0.1\bin\java.exe' '-agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=localhost:57164' '-XX:+ShowCodeDetailsInExceptionMessages' '-Dfile.encoding=UTF-8' '-cp' 'C:\Users\alexw\Documents\Schooool\redochess\rechess\target\classes' 'domain.UserInterface.App' 
+Welcome to chess! 
+Lowercase letters is black, and uppercase is white.
+Let's begin
+1 b k b q ! b k b
+2 p p p p p p p p
+3 - - - - - - - -
+4 - - - - - - - -
+5 - - - - - - - -
+6 - - - - - - - -
+7 P P P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+White to move, enter the square you wish to move from.
+b7
+Enter the square you wish to move to.
+b4
+Illegal pawn manuever at b7
+Move did not follow through, try again..
+1 b k b q ! b k b
+2 p p p p p p p p
+3 - - - - - - - -
+4 - - - - - - - -
+5 - - - - - - - -
+6 - - - - - - - -
+7 P P P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+White to move, enter the square you wish to move from.
+b7
+Enter the square you wish to move to.
+b5
+White Pawn, b7 -> b5
+1 b k b q ! b k b
+2 p p p p p p p p
+3 - - - - - - - -
+4 - - - - - - - -
+5 - P - - - - - -
+6 - - - - - - - -
+7 P - P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+Black to move, enter the square you wish to move from.
+n3
+Invalid square to move to at n3 retry!
+1 b k b q ! b k b
+2 p p p p p p p p
+3 - - - - - - - -
+4 - - - - - - - -
+5 - P - - - - - -
+6 - - - - - - - -
+7 P - P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+Black to move, enter the square you wish to move from.
+b2
+Enter the square you wish to move to.
+b4
+Black Pawn, b2 -> b4
+1 b k b q ! b k b
+2 p - p p p p p p
+3 - - - - - - - -
+4 - p - - - - - -
+5 - P - - - - - -
+6 - - - - - - - -
+7 P - P P P P P P
+8 R K B Q ! B K R
+  a b c d e f g h
+White to move, enter the square you wish to move from.
+c8
+Enter the square you wish to move to.
+b7
+White Bishop, c8 -> b7
+1 b k b q ! b k b
+2 p - p p p p p p
+3 - - - - - - - -
+4 - p - - - - - -
+5 - P - - - - - -
+6 - - - - - - - -
+7 P B P P P P P P
+8 R K - Q ! B K R
+  a b c d e f g h
+Black to move, enter the square you wish to move from.
+c1
+Enter the square you wish to move to.
+b2
+Black Bishop, c1 -> b2
+1 b k - q ! b k b
+2 p b p p p p p p
+3 - - - - - - - -
+4 - p - - - - - -
+5 - P - - - - - -
+6 - - - - - - - -
+7 P B P P P P P P
+8 R K - Q ! B K R
+  a b c d e f g h
+White to move, enter the square you wish to move from.
+b8 
+Enter the square you wish to move to.
+c6
+White Knight, b8 -> c6
+1 b k - q ! b k b
+2 p b p p p p p p
+3 - - - - - - - -
+4 - p - - - - - -
+5 - P - - - - - -
+6 - - K - - - - -
+7 P B P P P P P P
+8 R - - Q ! B K R
+  a b c d e f g h
+Black to move, enter the square you wish to move from.
+b1
+Enter the square you wish to move to.
+c3
+Black Knight, b1 -> c3
+1 b - - q ! b k b
+2 p b p p p p p p
+3 - - k - - - - -
+4 - p - - - - - -
+5 - P - - - - - -
+6 - - K - - - - -
+7 P B P P P P P P
+8 R - - Q ! B K R
+  a b c d e f g h
+White to move, enter the square you wish to move from.
+d7
+Enter the square you wish to move to.
+d5
+White Pawn, d7 -> d5
+1 b - - q ! b k b
+2 p b p p p p p p
+3 - - k - - - - -
+4 - p - - - - - -
+5 - P - P - - - -
+6 - - K - - - - -
+7 P B P - P P P P
+8 R - - Q ! B K R
+  a b c d e f g h
+Black to move, enter the square you wish to move from.
+d2
+Enter the square you wish to move to.
+d4
+Black Pawn, d2 -> d4
+1 b - - q ! b k b
+2 p b p - p p p p
+3 - - k - - - - -
+4 - p - p - - - -
+5 - P - P - - - -
+6 - - K - - - - -
+7 P B P - P P P P
+8 R - - Q ! B K R
+  a b c d e f g h
+White to move, enter the square you wish to move from.
+d8
+Enter the square you wish to move to.
+d6
+White Queen, d8 -> d6
+1 b - - q ! b k b
+2 p b p - p p p p
+3 - - k - - - - -
+4 - p - p - - - -
+5 - P - P - - - -
+6 - - K Q - - - -
+7 P B P - P P P P
+8 R - - - ! B K R
+  a b c d e f g h
+Black to move, enter the square you wish to move from.
+d1
+Enter the square you wish to move to.
+d3
+Black Queen, d1 -> d3
+1 b - - - ! b k b
+2 p b p - p p p p
+3 - - k q - - - -
+4 - p - p - - - -
+5 - P - P - - - -
+6 - - K Q - - - -
+7 P B P - P P P P
+8 R - - - ! B K R
+  a b c d e f g h
+White to move, enter the square you wish to move from.
+e8
+Enter the square you wish to move to.
+a8
+Rook cannot hop over the Pawn at a2
+Queen cannot hop over the Pawn at d4
+White castled!
+White Rook, a8 -> d8
+1 b - - - ! b k b
+2 p b p - p p p p
+3 - - k q - - - -
+4 - p - p - - - -
+5 - P - P - - - -
+6 - - K Q - - - -
+7 P B P - P P P P
+8 - - ! R - B K R
+  a b c d e f g h
+Black to move, enter the square you wish to move from.
+h2
+Enter the square you wish to move to.
+h3
+Black Pawn, h2 -> h3
+1 b - - - ! b k b
+2 p b p - p p p -
+3 - - k q - - - p
+4 - p - p - - - -
+5 - P - P - - - -
+6 - - K Q - - - -
+7 P B P - P P P P
+8 - - ! R - B K R
+  a b c d e f g h
+White to move, enter the square you wish to move from.
+d6
+Enter the square you wish to move to.
+f4
+White Queen, d6 -> f4
+1 b - - - ! b k b
+2 p b p - p p p -
+4 - p - p - Q - -
+5 - P - P - - - -
+6 - - K - - - - -
+7 P B P - P P P P
+8 - - ! R - B K R
+  a b c d e f g h
+Black to move, enter the square you wish to move from.
+a1
+Enter the square you wish to move to.
+e1

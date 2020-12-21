@@ -16,14 +16,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import domain.Logic.Color.ColorType;
-import domain.Pieces.Bishop;
-import domain.Pieces.King;
-import domain.Pieces.Knight;
-import domain.Pieces.Pawn;
-import domain.Pieces.Piece;
-import domain.Pieces.PieceType;
-import domain.Pieces.Queen;
-import domain.Pieces.Rook;
+import domain.Pieces.*;
 import domain.Pieces.Visitor.*;
 import domain.UserInterface.UI;
 
@@ -631,8 +624,8 @@ public final class Game { //prohibit inheritance
         return this.currentplayer;
     }
 
-    public void printBoard() {
-        board.showBoard();
+    public Square[][] getBoard(){
+        return board.getBoard();
     }
         
     public class Tuple2<K,V>{

@@ -1,8 +1,6 @@
 package domain.Logic;
 
 
-import java.util.Arrays;
-
 import domain.Logic.Color.ColorType;
 import domain.Pieces.Bishop;
 import domain.Pieces.King;
@@ -21,11 +19,12 @@ public class Board {
     private Square[][] bd = new Square[SIZE][SIZE];
 
     public Board(){
-        clearBoard();
+        clear();
         setWhitePieces();
         setBlackPieces();
     }
-    public void clearBoard(){
+
+    public void clear(){
         for (int rank = 0; rank < bd.length; rank++) {
             for (int file = 0; file < bd.length; file++) {
                 bd[rank][file] = new Square(new Pair(file,rank)); //x,y notation for pair
@@ -73,12 +72,5 @@ public class Board {
     public Square[][] getBoard(){
         return this.bd;
     }
-    
-    public void showBoard(){
-        //print each individuals Square toString 
-        for (int i = 0; i < bd.length; i++) {
-            System.out.println((i+1) +" " +Arrays.toString(bd[i]).replaceAll("\\[|]|,", "")); //replace the Array funky business with regex
-        }
-        System.out.println("  a b c d e f g h"); 
-    }
+
 }
