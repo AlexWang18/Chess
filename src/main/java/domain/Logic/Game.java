@@ -6,6 +6,7 @@ import java.io.IOException;
 
 CRUD CLI Chess game
 
+could get rid of null checking and have a blank or empty piecetype
 */
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import domain.Pieces.Queen;
 import domain.Pieces.Rook;
 import domain.UserInterface.UI;
 
-public class Game {
+public final class Game { //prohibit inheritance
 
     private Board board;
 
@@ -134,7 +135,7 @@ public class Game {
             executeMove(start, end, pawn, killedPiece); // passes
             return true;
         } else {
-            System.out.println("Illegal pawn manuever at " + start.getCoord());
+            Errors.pawnBreaksRules(start);
             return false;
         }
 
@@ -207,8 +208,9 @@ public class Game {
         
         // fails if the taken piece is not a pawn, or at the proper squares 
 
-        return !(!isPawn(opponentPiece) || prevMove.getEndingPair().getY() != blackDoubleJumpPos || prevMove.getEndingPair().getY() != whiteDoubleJumpPos
-                || opponentPiece.getColor() == pawn.getColor());
+        return !(!isPawn(opponentPiece) || prevMove.getEndingPair().getY() != blackDoubleJumpPos 
+                || prevMove.getEndingPair().getY() != whiteDoubleJumpPos
+                    || opponentPiece.getColor() == pawn.getColor());
 
     }
 
@@ -272,38 +274,42 @@ public class Game {
 
     private boolean checkSoundMove(Square start, Square end, Piece startPiece, Piece killedPiece) {
 
-        if (start.equals(end)) {
-            Errors.displayNoMovement();
-            return false;
+        if (start.equals(end)) { //anon class implementation
+            return new Error(){
+                @Override
+                public boolean displayError() { //no movement
+                    System.out.println("You should move at least 1 square");
+                    return false;
+                }
+            }.displayError();
+            
+         /*   Consumer<String> display = str -> System.out.println(str); //
+            display.accept("You should move at least 1 square"); */ //cant use bc does not return any value, only applies an operation on the argument
         }
 
         boolean test = isOwnedPiece(startPiece);
 
         if (!test) {
-            System.out
-                    .println("You do not own " + startPiece.getReadablePiece() + " at " + start.getCoord() + " silly");
-            return false;
+            return Errors.unOwnedPiece(start, startPiece); 
         }
 
         ImmutablePair<Pair, Boolean> testCheck = moveMakesCheck(start, end); 
                                                                                      
         if (Boolean.TRUE == testCheck.right) {
 
-            //pass in the Kings position to see if mate
+            //pass in the Kings position to see if mate, ends game if true
             if(isCheckMate(testCheck.left)){
                 over = true;
                 return false;
             }
 
-            Errors.isInCheck(startPiece, start);
-            return false;
+            return Errors.isInCheck(startPiece, start);
         }
 
         test = isFriendlyFire(startPiece, killedPiece);
 
         if (test) {
-            System.out.println("Cannot take your own piece silly");
-            return false;
+            return Errors.friendlyFire(end, killedPiece);
         }
 
         return true;
@@ -400,10 +406,9 @@ public class Game {
             addMove(kingSQ, board.getBoard()[7][6], king, null);
             addMove(rookSQ, board.getBoard()[7][5], rook, null);
         }
+
         System.out.println(king.getColor() + " castled!");
-        /*
-        execute move twice instead of adding two moves for each case
-        */
+    
         this.current += 2;
         switchCurrentPlayer();
     }
