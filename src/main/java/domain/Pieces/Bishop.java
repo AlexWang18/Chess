@@ -7,6 +7,7 @@ import java.util.List;
 
 import domain.Logic.Pair;
 import domain.Logic.Color.ColorType;
+import domain.Pieces.Visitor.*;
 
 public class Bishop extends Piece {
 
@@ -52,13 +53,15 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public <T> T accept(Visitor<T> visitor) {
-        return visitor.visitBishop(this);
+    public <T> T accept(Visitor<T> visitor, Pair startXY, Pair endXY) {
+        return visitor.visitBishop(this, startXY, endXY);
     }
 
     @Override
     public String getReadablePiece() {
         return "Bishop";
     }
+
+    
 
 }

@@ -79,26 +79,30 @@ public class Errors {
         System.out.println("An error has occured with the input.. try again");
     }
 
-    public static void pathIsBlocked(Message m){
+    public static boolean pathIsBlocked(Message m){
         Piece startPiece = m.startPiece;
         Piece blockingPiece = m.blockPiece;
         Pair atHere = m.whereXY;
 
         StringBuilder sb = new StringBuilder(startPiece.getReadablePiece() + " cannot hop over the "
         + blockingPiece.getReadablePiece() + " at " + atHere);
-        
+
         System.out.println(sb.toString());
+        return false;
     }
 
-    public static void piecesBlockingCastle(){
+    public static boolean piecesBlockingCastle(){
         System.out.println("You need to move your other pieces out of the way before castling!");
+        return false;
     }
 
-    public static void castleIsThreatened(Pair xy){
+    public static boolean castleIsThreatened(Pair xy){
         System.out.println("You cannot castle as your King will be threatened in the process at " + xy);
+        return false;
     }
 
-    public static void cannotCastleActivePieces(){
+    public static boolean cannotCastleActivePieces(){
         System.out.println("You have moved your king or rook already... cannot castle");
+        return false;
     }
 }

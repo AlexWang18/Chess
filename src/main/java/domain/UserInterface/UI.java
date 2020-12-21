@@ -8,7 +8,7 @@ import java.util.InputMismatchException;
 import domain.Logic.Errors;
 import domain.Logic.Game;
 import domain.Logic.Pair;
-import domain.Pieces.Visitor;
+import domain.Pieces.Visitor.*;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -16,17 +16,16 @@ public class UI implements Runnable {
 
     private Game game;
 
-    private static final String ENDCASE = "^(?i)(exit|stop)+$"; //embedded flag ? specifies case insensitive, + one or more times
-
+    private static final String ENDCASE = "^(?i)(exit|stop)+$"; // embedded flag ? specifies case insensitive, + one or more times
+                                                                
     private Reader read;
 
     private static BufferedReader br;
-    // private Visitor<> visitor;
 
     // we accept a implementation of the Reader interface as a parameter to
     // also pass different forms of readers for testing, e.g. fileReader
 
-    public UI(Game g, Reader r) throws IOException {
+    public UI(Game g, Reader r) {
         this.game = g;
         this.read = r;
     }
@@ -53,20 +52,23 @@ public class UI implements Runnable {
 
     private void gameIsOver() {
         System.out.println("GG!");
+        System.out.println("Do you want to replay the moves?");
+        // if yes undo moves until gone
     }
 
-    private boolean isInputValid(String input) {
-
-        return !(input.isBlank() || (input.length() > 2));
-
-    }
-
-    public boolean userEndCase(String... inputs) {
-        for (String str : inputs) {
-            if (str.matches(ENDCASE))
-                return true;
+    private void askMode() throws IOException { //add regex
+        System.out.println("What style of rules do you want to play?");
+        System.out.println("Classic, Silly, or None"); 
+        String input = br.readLine();
+        if (input.equals("Classic")) { 
+            game.setMode(new ClassicRules());
+        } else if (input.equals("None")) { 
+            //
+        }else{
+            Errors.inputError();
+            askMode();
         }
-        return false;
+       
     }
 
     // Prompting for user input until game is over
@@ -128,22 +130,35 @@ public class UI implements Runnable {
 
         game.getMoves();
         gameIsOver();
-        
+
     }
 
-    //If they reach end of the board prompt them with choice
-    public static String parsePieceChoice(String xy) throws IOException { 
+    private boolean isInputValid(String input) {
+
+        return !(input.isBlank() || (input.length() > 2));
+
+    }
+
+    public boolean userEndCase(String... inputs) {
+        for (String str : inputs) {
+            if (str.matches(ENDCASE))
+                return true;
+        }
+        return false;
+    }
+
+    // If they reach end of the board prompt them with choice
+    public static String parsePieceChoice(String xy) throws IOException {
         System.out.println("You can promote your pawn at " + xy + " Enter your choice between ");
         System.out.println("A. Knight \nB. Bishop \nC. Rook \nD. Queen");
         String pChoice = "";
         try {
             pChoice = br.readLine();
-        }
-        catch(InputMismatchException e){
+        } catch (InputMismatchException e) {
             Errors.inputError();
-            parsePieceChoice(xy); //call it it again if it failed
+            parsePieceChoice(xy); // call it it again if it failed
         }
-        
+
         return pChoice.trim();
     }
 
@@ -151,20 +166,8 @@ public class UI implements Runnable {
         return p.isPairValid();
     }
 
-    private Pair getPair(String input){
+    private Pair getPair(String input) {
         return new Pair(input);
     }
 
-
 }
- /*
-     * private void setMode(){
-     * System.out.println("What style of rules do you want to play?");
-     * System.out.println("Classic, Silly, or None"); String input = sc.nextLine();
-     * if(input.equals("Classic")){ visitor = new ClassicRules(); } else
-     * if(input.equals("Silly")){ visitor = new Object(); //would i encapsulate the
-     * pieces in Move, than accepting the created visitor } }
-     */
-    /*
-     * add method parameter to specify ruleset?
-     */

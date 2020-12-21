@@ -24,6 +24,7 @@ import domain.Pieces.Piece;
 import domain.Pieces.PieceType;
 import domain.Pieces.Queen;
 import domain.Pieces.Rook;
+import domain.Pieces.Visitor.*;
 import domain.UserInterface.UI;
 
 public final class Game { //prohibit inheritance
@@ -40,6 +41,8 @@ public final class Game { //prohibit inheritance
 
     public boolean over = false;
 
+    private Visitor<Boolean> visitor;
+
     private Game() {
         board = new Board();
         previousMoves = new ArrayList<>();
@@ -55,12 +58,16 @@ public final class Game { //prohibit inheritance
         return over;
     }
 
+    public void setMode(Visitor<Boolean> pVisitor){
+        this.visitor = pVisitor;
+    }
+
     // Starting point of each attemped move, returns true only if the move was valid
     // and executed
     /*
      * param: numerical coordinates indicating the location of a move on the Board's
      * 2D array
-     *
+     * TODO Need param of visitor - Instead of accessing directly the subs implemented class, we just accept the passed visitor
      *
      */
     public boolean tryMove(int startx, int starty, int endx, int endy) throws IOException {
@@ -120,7 +127,7 @@ public final class Game { //prohibit inheritance
             executeMove(start, end, pawn, killedPiece);
             return promote(pawn.getColor(), end, start.getCoord());
         }
-        
+        //visitor.visitPawn(pPawn, start.getCoord(), end.getCoord(), killedPiece);
         boolean test = pPawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece)
                         && checkPiecesPath(pawn.getPiecePath(start.getCoord(), end.getCoord()), start.getCoord(),
                         end.getCoord()).value;
@@ -133,43 +140,6 @@ public final class Game { //prohibit inheritance
             return false;
         }
 
-    }
-
-    private boolean promote(ColorType color, Square end, Pair readableXY) throws IOException {
-
-        String pChoice = UI.parsePieceChoice(readableXY.toString()); //idk abt this static method association and this implementation in general
-
-        //B    B.    B.....  b    bishop matches 
-
-        String knightRegex = "^(A\\.*|k(night)?)$"; //   '\\' need to use double backslash becasue \ is already used as an escape sequence in java
-        String bishopRegex = "^(B\\.*|b(ishop)?)$";
-        
-        String rookRegex = "^(C\\.*|r(ook)?)$";
-        String queenRegex = "^(D\\.*|q(ueen)?)$";
-
-        //could use Switch on a boolean, but opted for ifs for readability
-        
-        if (pChoice.matches(bishopRegex)) {
-
-            end.setPiece(new Bishop(color));
-
-        } else if (pChoice.matches(knightRegex)) {
-
-            end.setPiece(new Knight(color));
-
-        } else if (pChoice.matches(rookRegex)) {
-
-            end.setPiece(new Rook(color));
-
-        } else if (pChoice.matches(queenRegex)) {
-
-            end.setPiece(new Queen(color));
-
-        } else {
-            return false;
-        }
-
-        return true;
     }
 
     private boolean isEnPassant(Move prevMove, Pair start, Pair end, Piece pawn) {
@@ -232,6 +202,43 @@ public final class Game { //prohibit inheritance
         }
 
         return false;
+    }
+
+    private boolean promote(ColorType color, Square end, Pair readableXY) throws IOException {
+
+        String pChoice = UI.parsePieceChoice(readableXY.toString()); //idk abt this static method association and this implementation in general
+
+        //B    B.    B.....  b   bishop matches 
+
+        String knightRegex = "^(A\\.*|k(night)?)$"; //   '\\' need to use double backslash becasue \ is already used as an escape sequence in java
+        String bishopRegex = "^(B\\.*|b(ishop)?)$";
+        
+        String rookRegex = "^(C\\.*|r(ook)?)$";
+        String queenRegex = "^(D\\.*|q(ueen)?)$";
+
+        //could use Switch on a boolean, but opted for ifs for readability
+        
+        if (pChoice.matches(bishopRegex)) {
+
+            end.setPiece(new Bishop(color));
+
+        } else if (pChoice.matches(knightRegex)) {
+
+            end.setPiece(new Knight(color));
+
+        } else if (pChoice.matches(rookRegex)) {
+
+            end.setPiece(new Rook(color));
+
+        } else if (pChoice.matches(queenRegex)) {
+
+            end.setPiece(new Queen(color));
+
+        } else {
+            return false;
+        }
+
+        return true;
     }
 
     private boolean atEndOfBoard(Piece pawn, Pair endXY) {
@@ -337,13 +344,12 @@ public final class Game { //prohibit inheritance
 
         if (!checkPiecesPath(rook.getPiecePath(rookXY, kingXY), rookXY,
         kingXY).getBool()) {
-            Errors.piecesBlockingCastle();
-            return false;
+            return Errors.piecesBlockingCastle();
         }
 
         if (hasPieceMoved(kingSQ) || hasPieceMoved(rookSQ)) { // must have stayed in starting pos
-            Errors.cannotCastleActivePieces();
-            return false;
+            return Errors.cannotCastleActivePieces();
+            
         }
 
         if (kingIsThreatened(rookXY, kingXY)) { //cannot move through an enemy threatened square

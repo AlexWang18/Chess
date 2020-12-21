@@ -2,11 +2,12 @@ package domain.Pieces;
 
 
 
-import domain.Logic.Color.ColorType;
-import domain.Logic.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import domain.Logic.Color.ColorType;
+import domain.Logic.Pair;
+import domain.Pieces.Visitor.*;
 
 public class Queen extends Piece {
     public static final PieceType TYPE = PieceType.QUEEN;
@@ -71,8 +72,8 @@ public class Queen extends Piece {
     }
 
     @Override
-    public <T> T accept(Visitor<T> visitor) {
-        return visitor.visitQueen(this);
+    public <T> T accept(Visitor<T> visitor, Pair startXY, Pair endXY) {
+        return visitor.visitQueen(this, startXY, endXY);
     }
 
     @Override

@@ -1,12 +1,11 @@
 package domain.Pieces;
 
-
-
 import java.util.ArrayList;
 import java.util.List;
 
 import domain.Logic.Pair;
 import domain.Logic.Color.ColorType;
+import domain.Pieces.Visitor.Visitor;
 
 public class Knight extends Piece {
 
@@ -44,8 +43,8 @@ public class Knight extends Piece {
     }
 
     @Override
-    public <T> T accept(Visitor<T> visitor) {
-        return visitor.visitKnight(this);
+    public <T> T accept(Visitor<T> visitor, Pair startXY, Pair endXY) {
+        return visitor.visitKnight(this, startXY, endXY);
     }
 
     @Override

@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import domain.Logic.Color.ColorType;
 import domain.Logic.Pair;
+import domain.Pieces.Visitor.*;
+import domain.Pieces.*;
 
 public class Rook extends Piece {
     
@@ -62,8 +64,8 @@ public class Rook extends Piece {
     }
 
     @Override
-    public <T> T accept(Visitor<T> visitor) {
-        return visitor.visitRook(this);
+    public <T> T accept(Visitor<T> visitor, Pair startXY, Pair endXY) {
+        return visitor.visitRook(this, startXY, endXY);
     }
 
     @Override

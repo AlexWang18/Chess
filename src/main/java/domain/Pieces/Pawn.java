@@ -1,11 +1,10 @@
 package domain.Pieces;
 
-
-
 import java.util.Arrays;
 import java.util.List;
 
 import domain.Logic.Color.*;
+import domain.Pieces.Visitor.Visitor;
 import domain.Logic.Pair;
 
 public class Pawn extends Piece {
@@ -26,8 +25,8 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public boolean validOrNah(Pair start, Pair end) { // if that move with valid coordinates is allowed by rules
-        return validOrNah(start, end, null);
+    public boolean validOrNah(Pair startXY, Pair endXY) { // if that move with valid coordinates is allowed by rules
+        return validOrNah(startXY, endXY, null);
 
     }
 
@@ -92,16 +91,16 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public List<Pair> getPiecePath(Pair start, Pair end) { 
-        int startx = start.getX();
-        int starty = start.getY();
-        int endy = end.getY();
-        int endx = end.getX();
-        int length = Math.abs(end.getY() - start.getY()); 
+    public List<Pair> getPiecePath(Pair startXY, Pair endXY) { 
+        int startx = startXY.getX();
+        int starty = startXY.getY();
+        int endy = endXY.getY();
+        int endx = endXY.getX();
+        int length = Math.abs(endXY.getY() - startXY.getY()); 
         Pair[] temparr = new Pair[length];
 
         if(startx != endx && Math.abs(endy - starty) == 1){ //capture moves
-            return Arrays.asList(new Pair[] {start, end});
+            return Arrays.asList(new Pair[] {startXY, endXY});
         }
 
         for (int i = 0; i < length; i++) { //moving forward
@@ -113,12 +112,17 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public <T> T accept(Visitor<T> visitor) {
-        return visitor.visitPawn(this);
+    public <T> T accept(Visitor<T> visitor, Pair startXY, Pair endXY) {
+        return accept(visitor, startXY, endXY, null);
+    }
+  
+    public <T> T accept(Visitor<T> visitor, Pair startXY, Pair endXY, Piece pieceKilled) {
+        return visitor.visitPawn(this, startXY, endXY, pieceKilled);
     }
 
     @Override
     public String getReadablePiece() {
         return "Pawn";
     }
+
 }

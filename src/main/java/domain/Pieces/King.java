@@ -1,13 +1,12 @@
 package domain.Pieces;
 
-
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import domain.Logic.Pair;
 import domain.Logic.Color.ColorType;
+import domain.Pieces.Visitor.Visitor;
 
 public class King extends Piece {
 
@@ -43,13 +42,12 @@ public class King extends Piece {
     }
 
     @Override
-    public <T> T accept(Visitor<T> visitor) {
-        return visitor.visitKing(this);
+    public <T> T accept(Visitor<T> visitor, Pair startXY, Pair endXY) {
+        return visitor.visitKing(this, startXY, endXY);
     }
 
     @Override
     public String getReadablePiece() {
         return "King";
     }
-    
 }
