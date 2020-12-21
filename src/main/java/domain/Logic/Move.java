@@ -2,7 +2,6 @@ package domain.Logic;
 
 
 import domain.Pieces.Piece;
-import domain.Pieces.PieceType;
 
 //
 

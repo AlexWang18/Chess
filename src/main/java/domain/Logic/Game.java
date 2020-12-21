@@ -112,13 +112,14 @@ public class Game {
             executeEnPassant(start, end, pawn);
             return true;
         }
+        Pawn pPawn = (Pawn) pawn;
 
-        if (isValidPromotion(pawn, start, end)) {
-            // how do i get the users response after reaching end of board, should i have a
-            // two way relationship b/tw UI and Game or keep it has a unidirectional
+        if (isValidPromotion(pPawn, start, end)) { //not funct properly
             /*
             
-            
+             // how do i get the users response after reaching end of board, should i have a
+            // two way relationship b/tw UI and Game or keep it has a unidirectional
+
             */
             executeMove(start, end, pawn, killedPiece);
             return promote(pawn.getColor(), end, start.getCoord());
@@ -126,7 +127,7 @@ public class Game {
         // maybe put valid pawn capture here if keep getting issues in Pawn valid or nah
         // method
 
-        Pawn pPawn = (Pawn) pawn;
+        
         boolean test = pPawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece)
                 && checkPiecesPath(pawn.getPiecePath(start.getCoord(), end.getCoord()), start.getCoord(),
                         end.getCoord()).value;
@@ -145,10 +146,13 @@ public class Game {
 
         String pChoice = UI.parsePieceChoice(readableXY.toString()); //idk abt this static method and this implementation in general
 
-        String bishopRegex = "^b(ishop)?$";
-        String knightRegex = "^k(night)?$";
-        String rookRegex = "^r(ook)?$";
-        String queenRegex = "^q(ueen)?$";
+        //B    B.    B.....  b    bishop matches 
+
+        String knightRegex = "^(A\\.*|k(night)?)$"; //   '\\' need to use double backslash becasue \ is already used as an escape sequence in java
+        String bishopRegex = "^(B\\.*|b(ishop)?)$";
+        
+        String rookRegex = "^(C\\.*|r(ook)?)$";
+        String queenRegex = "^(D\\.*|q(ueen)?)$";
 
         //could use Switch on a boolean, but opted for ifs for readability
         
@@ -220,16 +224,19 @@ public class Game {
     }
 
 
-    private boolean isValidPromotion(Piece pawn, Square start, Square end) { //need 2 check for soundness
+    private boolean isValidPromotion(Pawn pawn, Square start, Square end) { 
 
         Pair startXY = start.getCoord();
         Pair endXY = end.getCoord();
-        if (startXY.getX() == endXY.getX() && end.hasPiece())
-            return false; // cannot move straight with something in the way
+        Piece killedPiece = end.getPiece(); //could be null
 
-        if (pawn.validOrNah(startXY, endXY)) {
+        if (startXY.getX() == endXY.getX() && end.hasPiece())
+            return false; // cannot move straight with something still in the way
+
+        if (pawn.validOrNah(startXY, endXY, killedPiece)) {
             return atEndOfBoard(pawn, endXY);
         }
+
         return false;
     }
 

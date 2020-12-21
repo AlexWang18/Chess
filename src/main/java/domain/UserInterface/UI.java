@@ -129,18 +129,20 @@ public class UI implements Runnable {
         gameIsOver();
     }
 
-    public static String parsePieceChoice(String xy) throws IOException {
-        System.out.println("You can promote your pawn at " + xy + "Enter your selection");
+    //If they reach end of the board prompt them with choice
+    public static String parsePieceChoice(String xy) throws IOException { 
+        System.out.println("You can promote your pawn at " + xy + " Enter your choice between ");
+        System.out.println("A. Knight \nB. Bishop \nC. Rook \nD. Queen");
         String pChoice = "";
         try {
             pChoice = br.readLine();
         }
         catch(InputMismatchException e){
             Errors.inputError();
-            parsePieceChoice(xy); //try again
+            parsePieceChoice(xy); //call it it again if it failed
         }
         
-        return pChoice.toLowerCase();
+        return pChoice.trim();
     }
 
     private boolean checkPair(Pair p) {

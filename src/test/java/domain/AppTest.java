@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -50,7 +51,7 @@ public class AppTest {
     }
 
     @Test
-    public void shouldTakeUserInput() throws FileNotFoundException {
+    public void shouldTakeUserInput() throws IOException {
         input = new UI(g, new FileReader(new File("text.txt")));
         String expectedOutput = "array";
         

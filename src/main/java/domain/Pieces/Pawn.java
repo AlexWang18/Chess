@@ -31,7 +31,7 @@ public class Pawn extends Piece {
 
     }
 
-    public boolean validOrNah(Pair startXY, Pair endXY, Piece killed) { //BUGGEd
+    public boolean validOrNah(Pair startXY, Pair endXY, Piece killed) { 
         if(startXY.equals(endXY)) return false;
 
         int startx = startXY.getX();
@@ -42,10 +42,14 @@ public class Pawn extends Piece {
         boolean watch = false;
         
 
-        if (this.getColor() == ColorType.White){watch = doTestsWhite(startx, starty, endx, endy, killed); return watch;}
-            
+        if (this.getColor() == ColorType.White){
+            watch = doTestsWhite(startx, starty, endx, endy, killed); 
+            return watch;
+        }    
         else{ 
-            watch = doTestsBlack(startx, starty, endx, endy, killed); return watch;}
+            watch = doTestsBlack(startx, starty, endx, endy, killed); 
+            return watch;
+        }
     }
 
     private boolean doTestsWhite(int startx, int starty, int endx, int endy, Piece killed) {
