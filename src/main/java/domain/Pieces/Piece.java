@@ -26,7 +26,7 @@ public abstract class Piece { // better abstract than interface less overrlap
 
     public abstract List<Pair> getPiecePath(Pair startXY, Pair endXY);
 
-    public abstract boolean validOrNah(Pair startXY, Pair endXY); // checks if the movement coordinates are feasbile for that piece                                                     
+    public abstract boolean validOrNah(Pair startXY, Pair endXY); // should instead have the visitor and use the visitor.validOrNah(this, startXY, endXY)   ?                                             
 
     public ColorType getColor() {
         return this.color;

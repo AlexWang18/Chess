@@ -7,6 +7,7 @@ import java.io.IOException;
 CRUD CLI Chess game
 
 could get rid of null checking and have a blank or empty piecetype
+TODO refactor move checking into Move class, could have an abstract move class with promotion, castling, normal, capture pawn etc
 */
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public final class Game { //prohibit inheritance
 
     public boolean over = false;
 
-    private Visitor<Boolean> visitor;
+    private Visitor<Boolean> visitor; //Should i have encapsulated this? Could have alternatively passed it so we make sure not null
 
     private Game() {
         board = new Board();
@@ -60,8 +61,8 @@ public final class Game { //prohibit inheritance
     /*
      * param: numerical coordinates indicating the location of a move on the Board's
      * 2D array
-     * TODO Need param of visitor - Instead of accessing directly the subs implemented class, we just accept the passed visitor
-     *
+     * TODO Need param of visitor - Instead of accessing directly the subs implemented class, we just accept the passed visitor.. 
+     * I could put a lot of the logic inside concrete visitors like if the conditions are true invoke behav
      */
     public boolean tryMove(int startx, int starty, int endx, int endy) throws IOException {
 
@@ -120,8 +121,8 @@ public final class Game { //prohibit inheritance
             executeMove(start, end, pawn, killedPiece);
             return promote(pawn.getColor(), end, start.getCoord());
         }
-        //visitor.visitPawn(pPawn, start.getCoord(), end.getCoord(), killedPiece);
-        boolean test = pPawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece)
+        
+        boolean test = visitor.invokeBehavior(pawn ,start.getCoord(), end.getCoord(), killedPiece)
                         && checkPiecesPath(pawn.getPiecePath(start.getCoord(), end.getCoord()), start.getCoord(),
                         end.getCoord()).value;
 
@@ -244,8 +245,7 @@ public final class Game { //prohibit inheritance
     }
 
     private boolean checkStandardMove(Square start, Square end, Piece startPiece, Piece killedPiece) {
-        boolean testValidMove = !isPawn(startPiece) 
-                                        && startPiece.validOrNah(start.getCoord(), end.getCoord());
+        boolean testValidMove =  visitor.invokeBehavior(startPiece ,start.getCoord(), end.getCoord(), killedPiece);
 
         //Message holds data about the legality of move
         Message moveData = checkPiecesPath(startPiece.getPiecePath(start.getCoord(), end.getCoord()),

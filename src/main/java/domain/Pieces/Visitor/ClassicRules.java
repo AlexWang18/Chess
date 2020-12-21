@@ -16,12 +16,13 @@ public class ClassicRules implements Visitor<Boolean> { // could make everyone q
      * class so they can choose classic or nah
      * 
      */
-
-    public void changeBehavior(Piece piece, Pair startXY, Pair endXY) {
-        if (piece instanceof Pawn) {
-            ;
+    @Override
+    public Boolean invokeBehavior(Piece piece, Pair startXY, Pair endXY, Piece killedPiece) {
+        if (piece instanceof Pawn) { 
+            Pawn pawn = (Pawn) piece; //trust me im a pro
+            return pawn.accept(this, startXY, endXY, killedPiece);
         }
-        piece.accept(this, startXY, endXY);
+        return piece.accept(this, startXY, endXY);
     }
 
     @Override

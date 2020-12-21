@@ -12,7 +12,6 @@ import domain.Logic.Pair;
 import domain.Logic.Square;
 import domain.Pieces.Visitor.*;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
 public class UI implements Runnable {
 
@@ -34,22 +33,23 @@ public class UI implements Runnable {
 
     @Override
     public void run() {
-        showGreeting();
 
         if (this.read instanceof BufferedReader) { // testing if we are doing user input
             br = (BufferedReader) read;
             try {
+                showGreeting();
                 getMoves();
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+            } 
         } else
             System.err.println("testing");
     }
 
-    public void showGreeting() {
-        System.out.println("Welcome to CL Chess! \nLowercase letters is black, and uppercase is white. \nLet's begin");
-        game.printBoard();
+    public void showGreeting() throws IOException {
+        System.out.println("Welcome to CL Chess!");
+        askMode();
+        showBoard();
     }
 
     private void gameIsOver() {
@@ -58,15 +58,29 @@ public class UI implements Runnable {
         // if yes undo moves until gone
     }
 
-    private void askMode() throws IOException { //add regex
+    private void askMode() throws IOException { // allow the user to choose between Normal rules, any sound moves i.e pawn can move unlimited diagnals, and Silly
+
         System.out.println("What style of rules do you want to play?");
         System.out.println("Classic, Silly, or None"); 
+
         String input = br.readLine();
-        if (input.equals("Classic")) { 
+
+        String classicRegex = "c(lassic)?";
+        String noRegex = "n(o)?";
+        String sillyRegex = "s(illy)?";
+
+        if (input.matches(classicRegex)) { 
+
             game.setMode(new ClassicRules());
-        } else if (input.equals("None")) { 
-            //
-        }else{
+
+        } else if (input.matches(noRegex)) { 
+
+            game.setMode(new NoRules());
+
+        } else if (input.matches(sillyRegex)){
+            ;
+        }
+         else{
             Errors.inputError();
             askMode();
         }
@@ -77,6 +91,8 @@ public class UI implements Runnable {
     public void getMoves() throws IOException {
         String input1 = "";
         String input2 = "";
+
+        System.out.println("Proper format is character file then numerical rank.");
 
         while (!game.isGameOver() && !userEndCase(input1, input2)) { // not working
             try {
@@ -141,8 +157,11 @@ public class UI implements Runnable {
 
     }
 
-    private void showBoard(){
+    private void showBoard(){ //display board in the UI
+        System.out.println("Lowercase letters is black, and uppercase is white. \nLet's begin");
+
         Square[][] bd = game.getBoard();
+
         for (int i = 0; i < bd.length; i++) {
             System.out.println((i+1) +" " +Arrays.toString(bd[i]).replaceAll("\\[|]|,", "")); //replace the Array funky business with regex
         }

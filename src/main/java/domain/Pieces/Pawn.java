@@ -112,7 +112,8 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public <T> T accept(Visitor<T> visitor, Pair startXY, Pair endXY) {
+    public <T> T accept(Visitor<T> visitor, Pair startXY, Pair endXY) { //Since pawns validity depends on the captured square 
+        //we need to have an overloaded accept method with proper arguments
         return accept(visitor, startXY, endXY, null);
     }
   

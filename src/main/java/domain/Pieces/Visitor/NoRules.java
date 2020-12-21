@@ -8,6 +8,11 @@ import domain.Pieces.*;
 public class NoRules implements Visitor<Boolean> {
 
     @Override
+    public Boolean invokeBehavior(Piece piece, Pair startXY, Pair endXY, Piece killedPiece) {
+        return piece.accept(this, startXY, endXY);
+    }
+    
+    @Override
     public Boolean visitBishop(Bishop bishop, Pair startXY, Pair endXY) {
         return true;
     }

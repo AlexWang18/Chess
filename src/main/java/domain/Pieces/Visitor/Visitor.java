@@ -8,6 +8,7 @@ public interface Visitor<T> {
     // visitor interface used to add functionality to Piece subclasses easily, can
     // return any generic type T concrete implementations are all gonna be Bool tho.. 
     //should prob nest to reduce file clutter
+    public abstract T invokeBehavior(Piece piece, Pair startXY, Pair endXY, Piece killedPiece);
 
     public T visitBishop(Bishop bishop, Pair startXY, Pair endXY);
 
