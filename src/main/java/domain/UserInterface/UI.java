@@ -125,8 +125,10 @@ public class UI implements Runnable {
                 game.printBoard();
             }
         }
+
         game.getMoves();
         gameIsOver();
+        
     }
 
     //If they reach end of the board prompt them with choice

@@ -83,8 +83,10 @@ public class Errors {
         Piece startPiece = m.startPiece;
         Piece blockingPiece = m.blockPiece;
         Pair atHere = m.whereXY;
+
         StringBuilder sb = new StringBuilder(startPiece.getReadablePiece() + " cannot hop over the "
         + blockingPiece.getReadablePiece() + " at " + atHere);
+        
         System.out.println(sb.toString());
     }
 

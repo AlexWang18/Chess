@@ -47,7 +47,7 @@ public final class Game { //prohibit inheritance
         current = 0;
     }
 
-    public static Game getGame() { // Implementation of Singleton Pattern, Only one game will occur at a time
+    public static Game getGame() { // Implementation of Singleton Pattern, Only one game will occur at a time   
         return g;
     }
 
@@ -81,8 +81,7 @@ public final class Game { //prohibit inheritance
             return false;
         }
 
-        // Special case for pawns, method handles enpasssant, promotion and regular
-        // moves
+        // Special case for pawns, method handles enpasssant, promotion and regular moves
         if (isPawn(startPiece)) {
             return checkPawnMove(start, end, startPiece, killedPiece);
         }
@@ -113,22 +112,17 @@ public final class Game { //prohibit inheritance
         }
         Pawn pPawn = (Pawn) pawn;
 
-        if (isValidPromotion(pPawn, start, end)) { //not funct properly
+        if (isValidPromotion(pPawn, start, end)) { 
             /*
-            
              // how do i get the users response after reaching end of board, should i have a
             // two way relationship b/tw UI and Game or keep it has a unidirectional
-
             */
             executeMove(start, end, pawn, killedPiece);
             return promote(pawn.getColor(), end, start.getCoord());
         }
-        // maybe put valid pawn capture here if keep getting issues in Pawn valid or nah
-        // method
-
         
         boolean test = pPawn.validOrNah(start.getCoord(), end.getCoord(), killedPiece)
-                && checkPiecesPath(pawn.getPiecePath(start.getCoord(), end.getCoord()), start.getCoord(),
+                        && checkPiecesPath(pawn.getPiecePath(start.getCoord(), end.getCoord()), start.getCoord(),
                         end.getCoord()).value;
 
         if (test) {
@@ -143,7 +137,7 @@ public final class Game { //prohibit inheritance
 
     private boolean promote(ColorType color, Square end, Pair readableXY) throws IOException {
 
-        String pChoice = UI.parsePieceChoice(readableXY.toString()); //idk abt this static method and this implementation in general
+        String pChoice = UI.parsePieceChoice(readableXY.toString()); //idk abt this static method association and this implementation in general
 
         //B    B.    B.....  b    bishop matches 
 

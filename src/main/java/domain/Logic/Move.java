@@ -18,7 +18,7 @@ public class Move {
         this.end = end;
         this.piecemoved = piecemoved;
         this.piecekilled = piecekilled;
-        move();
+        setPieces();
     }
     
     public Move(Square start, Square end, Piece piecemoved){
