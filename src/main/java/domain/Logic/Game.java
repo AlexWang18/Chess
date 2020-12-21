@@ -3,10 +3,8 @@ package domain.Logic;
 import java.io.IOException;
 
 /*
-CRUD CLI Chess game
-TODO Promotion 
 
-enpassant logic bug
+CRUD CLI Chess game
 
 */
 
@@ -290,13 +288,14 @@ public class Game {
         ImmutablePair<Pair, Boolean> testCheck = moveMakesCheck(start, end); 
                                                                                      
         if (Boolean.TRUE == testCheck.right) {
+
+            //pass in the Kings position to see if mate
             if(isCheckMate(testCheck.left)){
                 over = true;
                 return false;
             }
-            System.out.println("Cannot move " + startPiece.getReadablePiece() + " at " + start.getCoord()
-                    + " as you are in check");
 
+            Errors.isInCheck(startPiece, start);
             return false;
         }
 
@@ -432,7 +431,6 @@ public class Game {
         ImmutablePair<Pair,Boolean> ip = isPieceBeingAttkd(kingXY);
         if (Boolean.TRUE.equals(ip.right)) {
             causedCheck = true;
-            System.out.println(end.getPiece().getColor() + " is in check at "+ ip.left);
         }
 
         start.setPiece(end.getPiece()); // reset it back into place
@@ -478,7 +476,10 @@ public class Game {
             possibleKingPos.add(new Pair(x+1,y));
         }
 
-        List<? extends Pair> validKingMoves = possibleKingPos.stream().filter(p -> !isPieceBeingAttkd(p).right).collect(Collectors.toList());
+        //get rid of the moves that have pieces already occupying it, than filter the remaining if it is being attacked
+
+        List<? extends Pair> validKingMoves = possibleKingPos.stream().filter(m->!board.getBoard()[m.getY()][m.getX()].hasPiece()).
+            filter(p -> !isPieceBeingAttkd(p).right).collect(Collectors.toList());
 
         //if list is empty than there is no valid place for the king to go
         return validKingMoves.isEmpty();
@@ -565,8 +566,8 @@ public class Game {
 
     }
 
-    private boolean isOwnedPiece(Piece thispiece) {
-        return thispiece.getColor() == this.currentplayer;
+    private boolean isOwnedPiece(Piece thisPiece) {
+        return thisPiece.getColor() == this.currentplayer;
     }
 
     private boolean isFriendlyFire(Piece startPiece, Piece killedPiece) {

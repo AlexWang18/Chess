@@ -56,12 +56,17 @@ public class Errors {
         System.out.println(sb.toString());
     }
 
+    public static void isInCheck(Piece pieceMoved, Square start){
+        System.out.println(pieceMoved.getColor() + " cannot move " + pieceMoved.getReadablePiece() + " at " + start.getCoord()
+                    + " as they are in check");
+    }
+
     public static void piecesBlockingCastle(){
         System.out.println("You need to move your other pieces out of the way before castling!");
     }
 
     public static void castleIsThreatened(Pair xy){
-        System.out.println("You cannot castle as your King will be threatend in the process at " + xy);
+        System.out.println("You cannot castle as your King will be threatened in the process at " + xy);
     }
 
     public static void cannotCastleActivePieces(){
