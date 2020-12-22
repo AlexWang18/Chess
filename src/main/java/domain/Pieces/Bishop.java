@@ -2,7 +2,6 @@ package domain.Pieces;
 
 
 
-import java.util.Arrays;
 import java.util.List;
 
 import domain.Logic.Pair;
@@ -49,7 +48,7 @@ public class Bishop extends Piece {
             temparr[i - 1] = new Pair(startx + signX * i, starty + signY * i); //signY * i is direction times growing length
         }
         // System.out.println(Arrays.toString(temparr));
-        return Arrays.asList(temparr);
+        return java.util.Arrays.asList(temparr);
     }
 
     @Override

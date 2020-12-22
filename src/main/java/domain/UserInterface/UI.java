@@ -69,22 +69,23 @@ public class UI implements Runnable {
         String noRegex = "n(o)?";
         String sillyRegex = "s(illy)?";
 
-        if (input.matches(classicRegex)) { 
+        if (input.toLowerCase().matches(classicRegex)) { 
 
             game.setMode(new ClassicRules());
+            System.out.println("Okay! There are the standard rules in play! Lowercase letters is black, and uppercase is white. \nLet's begin");
 
-        } else if (input.matches(noRegex)) { 
+        } else if (input.toLowerCase().matches(noRegex)) { 
 
             game.setMode(new NoRules());
+            System.out.println("Okay! There are no moving rules! Lowercase letters is black, and uppercase is white. \nLet's begin");
 
-        } else if (input.matches(sillyRegex)){
+        } else if (input.toLowerCase().matches(sillyRegex)){
             ;
         }
          else{
             Errors.inputError();
             askMode();
         }
-       
     }
 
     // Prompting for user input until game is over
@@ -92,7 +93,7 @@ public class UI implements Runnable {
         String input1 = "";
         String input2 = "";
 
-        System.out.println("Proper format is character file then numerical rank.");
+        System.out.println("Proper square format is character file then numerical rank.");
 
         while (!game.isGameOver() && !userEndCase(input1, input2)) { // not working
             try {
@@ -101,8 +102,10 @@ public class UI implements Runnable {
                 System.out.println("enter the square you wish to move from.");
                 input1 = br.readLine();
 
-                if (!isInputValid(input1))
+                if (!isInputValid(input1)) //go back to top of the loop if wrong input, swap the characters if reversed, could i put this in a method with a return to top of loop?
                     continue;
+                else if(peek(input1))
+                    input1 = swap(input1);
 
                 Pair startingPair = getPair(input1.toLowerCase());
 
@@ -111,14 +114,14 @@ public class UI implements Runnable {
                     continue;
                 }
 
-                int startfile = startingPair.getX();
-                int startrank = startingPair.getY();
 
                 System.out.println("Enter the square you wish to move to.");
                 input2 = br.readLine();
 
                 if (!isInputValid(input2))
                     continue;
+                else if(peek(input2))
+                    input2 = swap(input2);
 
                 Pair endingPair = getPair(input2.toLowerCase());
 
@@ -127,6 +130,8 @@ public class UI implements Runnable {
                     continue;
                 }
 
+                int startfile = startingPair.getX();
+                int startrank = startingPair.getY();
                 int endfile = endingPair.getX();
                 int endrank = endingPair.getY();
 
@@ -151,6 +156,19 @@ public class UI implements Runnable {
 
     }
 
+    private boolean peek(String str){ //if they give reversed format
+    
+        return str.matches("^\\d\\w$");
+
+    }
+
+    private String swap(String str){
+        StringBuilder sb = new StringBuilder(); //could have also done a char array traversal
+        sb.append(str.charAt(1));
+        sb.append(str.charAt(0));
+        return sb.toString();
+    }
+
     private boolean isInputValid(String input) {
 
         return !(input.isBlank() || (input.length() > 2));
@@ -158,7 +176,6 @@ public class UI implements Runnable {
     }
 
     private void showBoard(){ //display board in the UI
-        System.out.println("Lowercase letters is black, and uppercase is white. \nLet's begin");
 
         Square[][] bd = game.getBoard();
 

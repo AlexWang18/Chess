@@ -200,9 +200,8 @@ public final class Game { //prohibit inheritance
 
     private boolean promote(ColorType color, Square end, Pair readableXY) throws IOException {
 
-        String pChoice = UI.parsePieceChoice(readableXY.toString()); //idk abt this static method association and this implementation in general
+        String pieceChoice = UI.parsePieceChoice(readableXY.toString()); //idk abt this static method association and this implementation in general - g
 
-        //B    B.    B.....  b   bishop matches 
 
         String knightRegex = "^(A\\.*|k(night)?)$"; //   '\\' need to use double backslash becasue \ is already used as an escape sequence in java
         String bishopRegex = "^(B\\.*|b(ishop)?)$";
@@ -212,22 +211,14 @@ public final class Game { //prohibit inheritance
 
         //could use Switch on a boolean, but opted for ifs for readability
         
-        if (pChoice.matches(bishopRegex)) {
-
+        if (pieceChoice.matches(bishopRegex)) {
             end.setPiece(new Bishop(color));
-
-        } else if (pChoice.matches(knightRegex)) {
-
+        } else if (pieceChoice.matches(knightRegex)) {
             end.setPiece(new Knight(color));
-
-        } else if (pChoice.matches(rookRegex)) {
-
+        } else if (pieceChoice.matches(rookRegex)) {
             end.setPiece(new Rook(color));
-
-        } else if (pChoice.matches(queenRegex)) {
-
+        } else if (pieceChoice.matches(queenRegex)) {
             end.setPiece(new Queen(color));
-
         } else {
             return false;
         }
@@ -594,22 +585,6 @@ public final class Game { //prohibit inheritance
         return this.previousMoves;
     }
 
-    private void undoMove() {
-        Move previous = getPrevMove();
-
-        if (previous == null)
-            return;
-
-        if (previous.getStartingPair() != previous.getEndingPair()) {
-            addMove(previous.getEndingSquare(), previous.getStartingSquare(), previous.getPieceMoved(), null);
-            if (previous.isCapture()) {
-                board.setPiece(previous.getEndingSquare(), previous.getPieceKilled());
-            }
-        }
-        previousMoves.remove(getPrevMove());
-        switchCurrentPlayer();
-    }
-
     public Move getPrevMove() {
         if (previousMoves.isEmpty())
             return null;
@@ -627,16 +602,21 @@ public final class Game { //prohibit inheritance
     public Square[][] getBoard(){
         return board.getBoard();
     }
-        
-    public class Tuple2<K,V>{
 
-        private final K e1;
+    private void undoMove() {
+        Move previous = getPrevMove();
 
-        private final V e2;
-            
-        public Tuple2(K ele1, V ele2){
-                this.e1 = ele1;
-                this.e2 = ele2;
+        if (previous == null)
+            return;
+
+        if (previous.getStartingPair() != previous.getEndingPair()) {
+            addMove(previous.getEndingSquare(), previous.getStartingSquare(), previous.getPieceMoved(), null);
+            if (previous.isCapture()) {
+                board.setPiece(previous.getEndingSquare(), previous.getPieceKilled());
+            }
         }
+        previousMoves.remove(getPrevMove());
+        switchCurrentPlayer();
     }
+
 }

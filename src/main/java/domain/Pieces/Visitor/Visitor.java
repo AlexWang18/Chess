@@ -1,7 +1,8 @@
 package domain.Pieces.Visitor;
 
+
+
 import domain.Logic.Pair;
-import domain.Logic.Square;
 import domain.Pieces.*;
 
 public interface Visitor<T> {
