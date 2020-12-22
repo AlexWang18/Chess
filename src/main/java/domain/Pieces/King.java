@@ -1,5 +1,6 @@
 package domain.Pieces;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +9,8 @@ import domain.Logic.Pair;
 import domain.Logic.Color.ColorType;
 import domain.Pieces.Visitor.Visitor;
 
+
+/* should i put possible Positions in here, return a list of possible pos based on the pair passed? */
 public class King extends Piece {
 
     public static final PieceType TYPE = PieceType.KING;

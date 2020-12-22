@@ -280,9 +280,9 @@ public final class Game { //prohibit inheritance
 
         ImmutablePair<Pair, Boolean> testCheck = moveMakesCheck(start, end); 
                                                                                      
-        if (Boolean.TRUE == testCheck.right) {
+        if (Boolean.TRUE == testCheck.right) { 
 
-            //pass in the Kings position to see if mate, ends game if true
+            //pass in the Kings position and piece to see if mate, ends game if true
             if(isCheckMate(testCheck.left)){
                 over = true;
                 return false;
@@ -429,21 +429,21 @@ public final class Game { //prohibit inheritance
     }
 
     private boolean isCheckMate(Pair currentKingXY) {
-        
+
         int x = currentKingXY.getX(); 
         int y = currentKingXY.getY();  
-        int GIRTH = Board.getSize();
-        
-        List<Pair> possibleKingPos = new ArrayList<>(8); 
+        int size = Board.getSize();
+
+        List<Pair> possibleKingPos = new ArrayList<>(8);
 
         //Adding possible moves for the passed king
-        
-        if((y + 1) < GIRTH){ //upper level
+
+        if((y + 1) < size){ //upper level
             possibleKingPos.add(new Pair(x, y + 1));
             if(x - 1 >= 0){
                 possibleKingPos.add(new Pair(x-1, y+1));
             }
-            if(x + 1 < GIRTH){
+            if(x + 1 < size){
                 possibleKingPos.add(new Pair(x+1, y+1));
             }
         }
@@ -453,7 +453,7 @@ public final class Game { //prohibit inheritance
             if(x - 1 >= 0){
                 possibleKingPos.add(new Pair(x-1, y-1));
             }
-            if(x + 1 < GIRTH){
+            if(x + 1 < size){
                 possibleKingPos.add(new Pair(x+1, y-1));
             }
         }
@@ -461,17 +461,16 @@ public final class Game { //prohibit inheritance
         if(x - 1 >= 0){ //same level
             possibleKingPos.add(new Pair(x-1,y));
         }
-        if(x + 1 < GIRTH){
+        if(x + 1 < size){
             possibleKingPos.add(new Pair(x+1,y));
         }
 
         //get rid of the moves that have pieces already occupying it, than filter the remaining if it is being attacked
 
-        List<? extends Pair> validKingMoves = possibleKingPos.stream().filter(m->!board.getBoard()[m.getY()][m.getX()].hasPiece()).
+        List<? extends Pair> validKingPos = possibleKingPos.stream().filter(m->!board.getBoard()[m.getY()][m.getX()].hasPiece()).
             filter(p -> !isPieceBeingAttkd(p).right).collect(Collectors.toList());
 
-        //if list is empty than there is no valid place for the king to go
-        return validKingMoves.isEmpty();
+        return validKingPos.isEmpty(); //if list is empty than there is no valid place for the king to go
     }
 
     private Pair getKingPos(Square[][] bd) {
@@ -545,7 +544,7 @@ public final class Game { //prohibit inheritance
         
         return flag;
     }
-
+  
     private boolean squareIsOccupied(Square[][] bd, Pair pair, Pair startXY, Pair endXY) {
         // Ignore the start and ending position of the path - irrelevant to the 
         //validity of the path
