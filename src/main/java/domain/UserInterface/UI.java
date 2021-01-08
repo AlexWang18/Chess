@@ -72,7 +72,7 @@ public class UI implements Runnable {
         if (input.toLowerCase().matches(classicRegex)) { 
 
             game.setMode(new ClassicRules());
-            System.out.println("Okay! There are the standard rules in play! Lowercase letters is black, and uppercase is white. \nLet's begin");
+            System.out.println("Let's begin!);
 
         } else if (input.toLowerCase().matches(noRegex)) { 
 
