@@ -21,7 +21,9 @@ public class King extends Piece {
 
     @Override
     public String toString() {
-        return "!";
+        if(this.getColor() == ColorType.Black) return "♔";
+
+        return "♚";
     }
 
     @Override

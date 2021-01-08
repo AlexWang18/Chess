@@ -22,9 +22,9 @@ public class Rook extends Piece {
 
     @Override
     public String toString() {
-        if(super.getColor() == ColorType.Black) return "r";
+        if(super.getColor() == ColorType.Black) return "♖";
         
-        return "R";
+        return "♜";
     }
 
     @Override

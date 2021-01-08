@@ -18,9 +18,9 @@ public class Queen extends Piece {
 
     @Override
     public String toString() {
-        if(super.getColor() == ColorType.Black) return "q";
+        if(super.getColor() == ColorType.Black) return "♕";
 
-        return "Q";
+        return "♛";
     }
 
     @Override

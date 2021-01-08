@@ -19,9 +19,9 @@ public class Pawn extends Piece {
 
     @Override
     public String toString() {
-        if(super.getColor() == ColorType.Black) return "p";
+        if(super.getColor() == ColorType.Black) return "♙";
 
-        return "P";
+        return "♟︎";
     }
 
     @Override
