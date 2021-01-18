@@ -30,13 +30,13 @@ import domain.UserInterface.*;
 /**
  * Uses System Rules dependency
  */
-public class AppTest {
+/*
+ public class AppTest {
     private static Game g;
     private static UI input;
 
-    /**
-     * Rigorous Test :-)
-     */
+   
+    
     @Rule
     // public final TextFromStandardInputStream systemInMock =
     // emptyStandardInputStream();
@@ -64,7 +64,6 @@ public class AppTest {
   /*  @Test
     public void checkPieceList(){
         assertThat(g.getMoves().isEmpty());
-    } */
-
+    } 
     
-}
+}   */
