@@ -6,8 +6,8 @@
 To get a local copy up and running follow these simple steps.
 Clone the project https://github.com/AlexWang18/Chess.git
 
-```bash
-# To start a matcg
+```bash  
+# To start a match  
 java -jar target/test-classes/domain/chess-1.jar
 ```
 
@@ -15,7 +15,7 @@ java -jar target/test-classes/domain/chess-1.jar
 
 ## Features:
 ---
-Allows for PvP games using standard chess rules and no rules alike. Comes with castling, pawn promotion, and En Passant
+Allows for PvP games using standard chess rules and no rules alike. Simply enter the letter and number of the piece you want to move and the coordinates you want to move to. Comes with castling, pawn promotion, and En Passant
 Has robust error detection that prevents the match from crashing.
 ## Starting
 Welcome to CL Chess!
