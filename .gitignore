@@ -2,8 +2,6 @@
 *.json
 /target/
 /settings/
-# Compiled class file
-*.class
 
 # Log file
 *.log
@@ -15,7 +13,7 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
+
 *.war
 *.nar
 *.ear
