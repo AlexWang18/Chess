@@ -1,9 +1,12 @@
 # ignore json file types
 *.json
 /settings/
+<<<<<<< HEAD
 # Compiled class file
 
 .vscode
+=======
+>>>>>>> c562d0ce06455181f4b54bf65d6f74749cc61844
 
 # Log file
 *.log
@@ -15,6 +18,10 @@
 .mtj.tmp/
 
 # Package Files #
+<<<<<<< HEAD
+=======
+
+>>>>>>> c562d0ce06455181f4b54bf65d6f74749cc61844
 *.war
 *.nar
 *.ear
