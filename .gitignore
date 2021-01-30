@@ -3,6 +3,7 @@
 /settings/
 # Compiled class file
 
+.vscode
 
 # Log file
 *.log
